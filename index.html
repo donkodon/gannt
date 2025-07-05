@@ -640,6 +640,83 @@
     justify-content: center;
     margin-top: 20px;
 }
+/* スマホ対応の改善 */
+@media (max-width: 768px) {
+    /* コンテナの調整 */
+    .container {
+        padding: 10px;
+    }
+    
+    /* ガントチャート全体をスクロール可能に */
+    .gantt-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* スムーズスクロール */
+    }
+    
+    /* ガントボディのスクロール改善 */
+    .gantt-body {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-height: 400px; /* スマホ用に高さを調整 */
+    }
+    
+    /* タスクリストの幅を調整 */
+    .task-list-header,
+    .task-list {
+        min-width: 250px; /* スマホ用に幅を狭く */
+        width: 250px;
+    }
+    
+    /* タッチ操作の改善 */
+    .timeline-container {
+        touch-action: pan-x pan-y;
+    }
+    
+    /* ボタンサイズの調整 */
+    .view-toggle button,
+    .add-task-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+}
+
+/* 横スクロールのヒント表示 */
+.gantt-body::after {
+    content: "→ 横にスクロール";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    pointer-events: none;
+    animation: fadeOut 3s forwards;
+    animation-delay: 1s;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+/* タッチ操作用のスクロールバー表示 */
+@media (max-width: 768px) {
+    .gantt-body::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .gantt-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    .gantt-body::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+}
     </style>
 </head>
 <body>
