@@ -6,7 +6,7 @@
     <title>ガントチャート＆カンバンシステム</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>  <!-- この行を追加 -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -103,7 +103,7 @@
             background-color: #f8f9fa;
             position: sticky;
             left: 0;
-            z-index: 10;
+            z-index: 30;
         }
         
         .timeline-header-wrapper {
@@ -126,7 +126,7 @@
             background-color: white;
             position: sticky;
             left: 0;
-            z-index: 10;
+            z-index: 25;
         }
         
         .task-row {
@@ -140,6 +140,8 @@
             min-height: 50px;
             max-height: 50px;
             position: relative;
+            background-color: white;
+            z-index: 25;
         }
         
         .task-row:hover {
@@ -162,11 +164,13 @@
         
         .task-row.child-task {
             padding-left: 40px;
+            background-color: white;
         }
         
         .task-row.grandchild-task {
             padding-left: 70px;
             font-size: 14px;
+            background-color: white;
         }
         
         .task-row.hidden {
@@ -247,6 +251,7 @@
             flex: 1;
             position: relative;
             background-color: white;
+            z-index: 1;
         }
         
         .timeline-header {
@@ -603,120 +608,157 @@
         .gantt-body::-webkit-scrollbar-corner {
             background: #f1f1f1;
         }
+        
         /* タスク削除ボタン */
-.delete-task-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-.delete-task-btn:hover {
-    background-color: #c82333;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* 確認ダイアログ */
-.confirm-dialog {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px 30px;
-    border-radius: 8px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
-    z-index: 1002;
-    text-align: center;
-}
-
-.confirm-dialog h3 {
-    margin-bottom: 15px;
-    color: #dc3545;
-}
-
-.confirm-dialog .confirm-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-}
-/* スマホ対応の改善 */
-@media (max-width: 768px) {
-    /* コンテナの調整 */
-    .container {
-        padding: 10px;
-    }
-    
-    /* ガントチャート全体をスクロール可能に */
-    .gantt-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* スムーズスクロール */
-    }
-    
-    /* ガントボディのスクロール改善 */
-    .gantt-body {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        max-height: 400px; /* スマホ用に高さを調整 */
-    }
-    
-    /* タスクリストの幅を調整 */
-    .task-list-header,
-    .task-list {
-        min-width: 250px; /* スマホ用に幅を狭く */
-        width: 250px;
-    }
-    
-    /* タッチ操作の改善 */
-    .timeline-container {
-        touch-action: pan-x pan-y;
-    }
-    
-    /* ボタンサイズの調整 */
-    .view-toggle button,
-    .add-task-btn {
-        padding: 8px 15px;
-        font-size: 12px;
-    }
-}
-
-/* 横スクロールのヒント表示 */
-.gantt-body::after {
-    content: "→ 横にスクロール";
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    pointer-events: none;
-    animation: fadeOut 3s forwards;
-    animation-delay: 1s;
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-    }
-}
-/* タッチ操作用のスクロールバー表示 */
-@media (max-width: 768px) {
-    .gantt-body::-webkit-scrollbar {
-        height: 8px;
-    }
-    
-    .gantt-body::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-    
-    .gantt-body::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 4px;
-    }
-}
+        .delete-task-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .delete-task-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* 確認ダイアログ */
+        .confirm-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+            z-index: 1002;
+            text-align: center;
+        }
+        
+        .confirm-dialog h3 {
+            margin-bottom: 15px;
+            color: #dc3545;
+        }
+        
+        .confirm-dialog .confirm-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        /* スマホ対応の改善 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .gantt-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .gantt-body {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                max-height: 400px;
+            }
+            
+            .task-list-header,
+            .task-list {
+                min-width: 250px;
+                width: 250px;
+            }
+            
+            .timeline-container {
+                touch-action: pan-x pan-y;
+            }
+            
+            .view-toggle button,
+            .add-task-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+        }
+        
+        /* 横スクロールのヒント表示 */
+        .gantt-body::after {
+            content: "→ 横にスクロール";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            animation: fadeOut 3s forwards;
+            animation-delay: 1s;
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+        
+        /* タッチ操作用のスクロールバー表示 */
+        @media (max-width: 768px) {
+            .gantt-body::-webkit-scrollbar {
+                height: 8px;
+            }
+            
+            .gantt-body::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            
+            .gantt-body::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 4px;
+            }
+        }
+        
+        /* === 追加機能のスタイル === */
+        /* 13行目以降の背景を白に */
+        .task-list .task-row:nth-child(n+13) {
+            background-color: white !important;
+        }
+        
+        .task-list .task-row.child-task,
+        .task-list .task-row.grandchild-task {
+            background-color: white !important;
+        }
+        
+        .task-list .task-row:nth-child(n+13):hover {
+            background-color: #e3f2fd !important;
+        }
+        
+        /* タスクリストを最前面に固定 */
+        .task-list {
+            background-color: white !important;
+            z-index: 25 !important;
+            position: sticky !important;
+            left: 0 !important;
+        }
+        
+        .task-list-header {
+            z-index: 30 !important;
+            position: sticky !important;
+            left: 0 !important;
+        }
+        
+        /* 今日の線のスタイル */
+        .today-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #ff6b6b;
+            z-index: 100;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -801,16 +843,16 @@
                     </select>
                 </div>
                 <div class="modal-buttons">
-    <button type="button" class="btn-secondary" onclick="closeModal()">キャンセル</button>
-    <button type="button" class="btn-primary delete-task-btn" onclick="deleteTask()" style="display:none;">削除</button>
-    <button type="submit" class="btn-primary">保存</button>
-</div>
+                    <button type="button" class="btn-secondary" onclick="closeModal()">キャンセル</button>
+                    <button type="button" class="btn-primary delete-task-btn" onclick="deleteTask()" style="display:none;">削除</button>
+                    <button type="submit" class="btn-primary">保存</button>
+                </div>
             </form>
         </div>
     </div>
     
     <script>
-        // Firebase設定 - あなたのプロジェクトの設定
+        // Firebase設定
         const firebaseConfig = {
             apiKey: "AIzaSyA9YTokKRh-VK_MYIMfqQWmJrdNLKr610B",
             authDomain: "project-gantt-7ab83-c73a2.firebaseapp.com",
@@ -846,7 +888,7 @@
         let editingTaskId = null;
         let draggedElement = null;
         let draggedTaskId = null;
-        let isUpdatingFromFirebase = false; // Firebase更新中フラグ
+        let isUpdatingFromFirebase = false;
         
         // デフォルトのタスクデータ
         const defaultTasks = [
@@ -943,6 +985,97 @@
             if (isFirebaseEnabled) {
                 setupConnectionMonitoring();
             }
+            
+            // 追加機能の実行
+            setTimeout(() => {
+                scrollToTodayWithRedLine();
+                fixBackgroundColors();
+                optimizePerformance();
+            }, 100);
+        }
+        
+        // 今日の位置にスクロールして赤い線を追加
+        function scrollToTodayWithRedLine() {
+            const ganttBody = document.getElementById('ganttBody');
+            if (!ganttBody) return;
+            
+            const today = new Date();
+            const startDate = new Date('2025-01-01');
+            const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+            
+            // 10日前の位置にスクロール
+            const scrollPosition = Math.max(0, (daysDiff - 10) * 30);
+            ganttBody.scrollLeft = scrollPosition;
+            
+            // 赤い線を追加
+            addTodayLine();
+        }
+        
+        // 今日の位置に赤い線を追加
+        function addTodayLine() {
+            const today = new Date();
+            const startDate = new Date('2025-01-01');
+            const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+            const todayPosition = (daysDiff + 1) * 30;
+            
+            const timelineRows = document.querySelectorAll('.timeline-row');
+            timelineRows.forEach(row => {
+                const existingLine = row.querySelector('.today-line');
+                if (existingLine) existingLine.remove();
+                
+                const todayLine = document.createElement('div');
+                todayLine.className = 'today-line';
+                todayLine.style.left = `${todayPosition}px`;
+                row.appendChild(todayLine);
+            });
+        }
+        
+        // 13行目以降の背景を白に修正
+        function fixBackgroundColors() {
+            const taskRows = document.querySelectorAll('.task-list .task-row');
+            taskRows.forEach((row, index) => {
+                if (index >= 12) {
+                    row.style.backgroundColor = 'white';
+                }
+            });
+        }
+        
+        // パフォーマンス最適化
+        function optimizePerformance() {
+            const ganttBody = document.getElementById('ganttBody');
+            if (!ganttBody) return;
+            
+            // スクロールイベントで表示範囲のグリッドのみ表示
+            function updateVisibleGrid() {
+                const scrollLeft = ganttBody.scrollLeft;
+                const visibleWidth = ganttBody.clientWidth;
+                const startDay = Math.max(0, Math.floor(scrollLeft / 30) - 20);
+                const endDay = Math.ceil((scrollLeft + visibleWidth) / 30) + 20;
+                
+                document.querySelectorAll('.timeline-row').forEach(row => {
+                    const grid = row.querySelector('.timeline-grid');
+                    if (!grid) return;
+                    
+                    const cells = grid.querySelectorAll('.grid-cell');
+                    cells.forEach((cell, index) => {
+                        if (index < startDay || index > endDay) {
+                            cell.style.visibility = 'hidden';
+                        } else {
+                            cell.style.visibility = 'visible';
+                        }
+                    });
+                });
+            }
+            
+            // 初回実行
+            updateVisibleGrid();
+            
+            // スクロール時に更新
+            let scrollTimeout;
+            ganttBody.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(updateVisibleGrid, 50);
+            });
         }
         
         // Firebase接続状態の監視
@@ -961,7 +1094,6 @@
         
         // 接続状態の表示
         function showConnectionStatus(status, type) {
-            // 既存のステータス表示を削除
             const existingStatus = document.querySelector('.connection-status');
             if (existingStatus) {
                 existingStatus.remove();
@@ -983,7 +1115,6 @@
             
             document.body.appendChild(statusDiv);
             
-            // 3秒後に自動削除
             setTimeout(() => {
                 if (statusDiv.parentNode) {
                     statusDiv.remove();
@@ -993,21 +1124,19 @@
         
         // Firebaseリスナーの設定
         function setupFirebaseListeners() {
-            // タスクデータの監視
             database.ref('tasks').on('value', function(snapshot) {
-    if (!isUpdatingFromFirebase) {
-        const data = snapshot.val();
-        if (data && Array.isArray(data)) {
-            isUpdatingFromFirebase = true;
-            // parentIdの型を修正
-            tasks = data.map(task => ({
-                ...task,
-                parentId: task.parentId === null || task.parentId === 'null' || 
-                         task.parentId === '' || task.parentId === undefined ? null : 
-                         typeof task.parentId === 'string' ? parseInt(task.parentId) : task.parentId,
-                id: typeof task.id === 'string' ? parseInt(task.id) : task.id
-            }));
-            saveTasksToLocalStorage();
+                if (!isUpdatingFromFirebase) {
+                    const data = snapshot.val();
+                    if (data && Array.isArray(data)) {
+                        isUpdatingFromFirebase = true;
+                        tasks = data.map(task => ({
+                            ...task,
+                            parentId: task.parentId === null || task.parentId === 'null' || 
+                                     task.parentId === '' || task.parentId === undefined ? null : 
+                                     typeof task.parentId === 'string' ? parseInt(task.parentId) : task.parentId,
+                            id: typeof task.id === 'string' ? parseInt(task.id) : task.id
+                        }));
+                        saveTasksToLocalStorage();
                         renderGanttChart();
                         renderKanban();
                         isUpdatingFromFirebase = false;
@@ -1016,14 +1145,13 @@
                 }
             });
             
-            // 折りたたみ状態の監視
             database.ref('collapsedTasks').on('value', function(snapshot) {
                 if (!isUpdatingFromFirebase) {
                     const data = snapshot.val();
                     if (data && Array.isArray(data)) {
                         isUpdatingFromFirebase = true;
                         collapsedTasks = new Set(data);
-                        saveCollapsedStateToLocalStorage(); // ローカルにもバックアップ
+                        saveCollapsedStateToLocalStorage();
                         renderGanttChart();
                         isUpdatingFromFirebase = false;
                         console.log('Collapsed state updated from Firebase');
@@ -1038,7 +1166,6 @@
                 .then(function(snapshot) {
                     const data = snapshot.val();
                     if (data && Array.isArray(data) && data.length > 0) {
-                        // parentIdの型を修正
                         tasks = data.map(task => ({
                             ...task,
                             parentId: task.parentId === null || task.parentId === 'null' || 
@@ -1070,33 +1197,32 @@
                     if (data && Array.isArray(data)) {
                         collapsedTasks = new Set(data);
                     }
-                    saveCollapsedStateToLocalStorage(); // ローカルにもバックアップ
+                    saveCollapsedStateToLocalStorage();
                 })
                 .catch(function(error) {
                     console.error('Failed to load collapsed state from Firebase:', error);
-                    loadCollapsedState(); // フォールバック
+                    loadCollapsedState();
                 });
         }
         
-      // Firebaseにタスクを保存
-function saveTasksToFirebase() {
-    if (!isFirebaseEnabled || isUpdatingFromFirebase) return;
-    
-    // parentIdがundefinedの場合はnullに変換
-    const cleanedTasks = tasks.map(task => ({
-        ...task,
-        parentId: task.parentId === undefined || task.parentId === '' ? null : task.parentId
-    }));
-    
-    database.ref('tasks').set(cleanedTasks)
-        .then(function() {
-            console.log('Tasks saved to Firebase');
-        })
-        .catch(function(error) {
-            console.error('Failed to save tasks to Firebase:', error);
-            showConnectionStatus('保存エラー', 'error');
-        });
-}
+        // Firebaseにタスクを保存
+        function saveTasksToFirebase() {
+            if (!isFirebaseEnabled || isUpdatingFromFirebase) return;
+            
+            const cleanedTasks = tasks.map(task => ({
+                ...task,
+                parentId: task.parentId === undefined || task.parentId === '' ? null : task.parentId
+            }));
+            
+            database.ref('tasks').set(cleanedTasks)
+                .then(function() {
+                    console.log('Tasks saved to Firebase');
+                })
+                .catch(function(error) {
+                    console.error('Failed to save tasks to Firebase:', error);
+                    showConnectionStatus('保存エラー', 'error');
+                });
+        }
         
         // Firebaseに折りたたみ状態を保存
         function saveCollapsedStateToFirebase() {
@@ -1116,13 +1242,12 @@ function saveTasksToFirebase() {
             const ganttBody = document.getElementById('ganttBody');
             const timelineHeader = document.getElementById('timelineHeader');
             
-            // ガントボディのスクロールに合わせてヘッダーを移動
             ganttBody.addEventListener('scroll', function(e) {
                 timelineHeader.style.transform = `translateX(-${e.target.scrollLeft}px)`;
             });
         }
         
-        // LocalStorageからタスクを読み込む（フォールバック用）
+        // LocalStorageからタスクを読み込む
         function loadTasksFromStorage() {
             const savedTasks = localStorage.getItem(STORAGE_KEY);
             if (savedTasks) {
@@ -1137,7 +1262,7 @@ function saveTasksToFirebase() {
             }
         }
         
-        // LocalStorageにタスクを保存（バックアップ用）
+        // LocalStorageにタスクを保存
         function saveTasksToLocalStorage() {
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
@@ -1147,14 +1272,14 @@ function saveTasksToFirebase() {
         }
 
         // タスクのparentIdを正規化
-function normalizeParentIds() {
-    tasks = tasks.map(task => ({
-        ...task,
-        parentId: task.parentId === undefined || task.parentId === '' ? null : task.parentId
-    }));
-}
+        function normalizeParentIds() {
+            tasks = tasks.map(task => ({
+                ...task,
+                parentId: task.parentId === undefined || task.parentId === '' ? null : task.parentId
+            }));
+        }
         
-        // 折りたたみ状態を読み込む（フォールバック用）
+        // 折りたたみ状態を読み込む
         function loadCollapsedState() {
             const saved = localStorage.getItem(COLLAPSED_KEY);
             if (saved) {
@@ -1167,7 +1292,7 @@ function normalizeParentIds() {
             }
         }
         
-        // 折りたたみ状態を保存（バックアップ用）
+        // 折りたたみ状態を保存
         function saveCollapsedStateToLocalStorage() {
             try {
                 localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsedTasks]));
@@ -1222,13 +1347,11 @@ function normalizeParentIds() {
         
         // タスクが表示されるべきかチェック
         function isTaskVisible(task) {
-            // 親タスクが折りたたまれているかチェック
             if (task.parentId) {
                 const parent = tasks.find(t => t.id === task.parentId);
                 if (parent && collapsedTasks.has(parent.id)) {
                     return false;
                 }
-                // 祖父タスクもチェック（孫タスクの場合）
                 if (parent && parent.parentId) {
                     const grandParent = tasks.find(t => t.id === parent.parentId);
                     if (grandParent && collapsedTasks.has(grandParent.id)) {
@@ -1251,12 +1374,10 @@ function normalizeParentIds() {
             
             const children = tasks.filter(t => t.parentId === taskId);
             if (children.length === 0) {
-                // 子タスクがない場合
                 return task.status === 'done' ? 100 : 
                        task.status === 'inprogress' ? 50 : 0;
             }
             
-            // 子タスクがある場合
             let totalProgress = 0;
             children.forEach(child => {
                 totalProgress += calculateProgress(child.id);
@@ -1314,17 +1435,14 @@ function normalizeParentIds() {
             const timeline = document.getElementById('timeline');
             const timelineHeader = document.getElementById('timelineHeader');
             
-            // クリア
             taskList.innerHTML = '';
             timeline.innerHTML = '';
             timelineHeader.innerHTML = '';
             
-            // 日付範囲の計算
             const startDate = new Date('2025-01-01');
             const endDate = new Date('2025-12-31');
             const totalDays = 365;
             
-            // 月ヘッダーの作成
             const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
             const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
             
@@ -1336,18 +1454,12 @@ function normalizeParentIds() {
                 timelineHeader.appendChild(monthHeader);
             });
             
-            // タスクの描画
             const flatTaskList = getFlatTaskList();
             
-            // 各タスクに対して同時に行を作成
             flatTaskList.forEach((task, index) => {
-                // タスクが表示されるべきかチェック
                 const visible = isTaskVisible(task);
-                
-                // 進捗率を計算
                 const progress = calculateProgress(task.id);
                 
-                // 1. タスク行の作成
                 const taskRow = document.createElement('div');
                 taskRow.className = 'task-row';
                 if (!visible) taskRow.classList.add('hidden');
@@ -1363,7 +1475,6 @@ function normalizeParentIds() {
                     taskRow.classList.add('grandchild-task');
                 }
                 
-                // 折りたたみボタン
                 const hasChildTasks = hasChildren(task.id);
                 if (hasChildTasks) {
                     const collapseBtn = document.createElement('button');
@@ -1388,21 +1499,18 @@ function normalizeParentIds() {
                 `;
                 taskRow.appendChild(taskContent);
                 
-                // イベントリスナー
                 taskRow.addEventListener('dragstart', handleDragStart);
                 taskRow.addEventListener('dragover', handleDragOver);
                 taskRow.addEventListener('drop', handleDrop);
                 taskRow.addEventListener('dragend', handleDragEnd);
                 taskRow.addEventListener('click', () => openEditTaskModal(task.id));
                 
-                // 2. タイムライン行の作成（同じタスクデータを使用）
                 const timelineRow = document.createElement('div');
                 timelineRow.className = 'timeline-row';
                 if (!visible) timelineRow.classList.add('hidden');
                 timelineRow.dataset.taskId = task.id;
                 timelineRow.dataset.index = index;
                 
-                // グリッドの作成
                 const gridContainer = document.createElement('div');
                 gridContainer.className = 'timeline-grid';
                 
@@ -1419,7 +1527,6 @@ function normalizeParentIds() {
                 
                 timelineRow.appendChild(gridContainer);
                 
-                // 3. タスクバーの作成（同じタスクデータを使用）
                 const taskStart = new Date(task.start);
                 const taskEnd = new Date(task.end);
                 const startOffset = Math.max(0, Math.floor((taskStart - startDate) / (1000 * 60 * 60 * 24)));
@@ -1435,7 +1542,6 @@ function normalizeParentIds() {
                     taskBar.style.left = `${startOffset * 30}px`;
                     taskBar.style.width = `${duration * 30}px`;
                     
-                    // 進捗バーの表示
                     if (progress > 0 && progress < 100) {
                         const progressFill = document.createElement('div');
                         progressFill.className = 'progress-fill';
@@ -1448,7 +1554,6 @@ function normalizeParentIds() {
                     progressText.textContent = `${progress}%`;
                     taskBar.appendChild(progressText);
                     
-                    // 完了タスクのスタイル
                     if (progress === 100) {
                         taskBar.style.opacity = '0.9';
                     }
@@ -1456,15 +1561,19 @@ function normalizeParentIds() {
                     timelineRow.appendChild(taskBar);
                 }
                 
-                // 4. DOMに追加（同じ順序で）
                 taskList.appendChild(taskRow);
                 timeline.appendChild(timelineRow);
             });
             
-            // タイムラインの幅を設定
             const timelineWidth = totalDays * 30;
             timeline.style.width = `${timelineWidth}px`;
             timelineHeader.style.width = `${timelineWidth}px`;
+            
+            // 再描画後に追加機能を実行
+            setTimeout(() => {
+                addTodayLine();
+                fixBackgroundColors();
+            }, 50);
         }
         
         // カンバンの描画
@@ -1473,12 +1582,10 @@ function normalizeParentIds() {
             const inprogressCards = document.getElementById('inprogressCards');
             const doneCards = document.getElementById('doneCards');
             
-            // クリア
             todoCards.innerHTML = '';
             inprogressCards.innerHTML = '';
             doneCards.innerHTML = '';
             
-            // タスクをステータスごとに分類
             const flatTaskList = getFlatTaskList();
             
             flatTaskList.forEach(task => {
@@ -1497,7 +1604,6 @@ function normalizeParentIds() {
                 }
             });
             
-            // ドロップゾーンの設定
             [todoCards, inprogressCards, doneCards].forEach(zone => {
                 zone.addEventListener('dragover', handleKanbanDragOver);
                 zone.addEventListener('drop', handleKanbanDrop);
@@ -1546,7 +1652,6 @@ function normalizeParentIds() {
             draggedTaskId = parseInt(e.target.dataset.taskId);
             e.target.classList.add('dragging');
             
-            // 対応するタイムライン行も半透明に
             const timelineRow = document.querySelector(`.timeline-row[data-task-id="${draggedTaskId}"]`);
             if (timelineRow) {
                 timelineRow.classList.add('dragging');
@@ -1616,17 +1721,14 @@ function normalizeParentIds() {
             if (draggedTask.level !== targetTask.level) return;
             if (draggedTask.parentId !== targetTask.parentId) return;
             
-            // タスクとその子タスクを収集
             const tasksToMove = [];
             collectTaskWithChildren(draggedId, tasksToMove);
             
-            // 元の位置から削除
             tasksToMove.forEach(task => {
                 const index = tasks.findIndex(t => t.id === task.id);
                 if (index > -1) tasks.splice(index, 1);
             });
             
-            // 新しい位置に挿入
             const targetIndex = tasks.findIndex(t => t.id === targetId);
             if (targetIndex > -1) {
                 tasks.splice(targetIndex + 1, 0, ...tasksToMove);
@@ -1677,9 +1779,7 @@ function normalizeParentIds() {
             document.getElementById('taskForm').reset();
             updateParentTaskOptions();
             document.getElementById('taskModal').style.display = 'block';
-
-             // 削除ボタンを非表示（この部分を追加）
-    document.querySelector('.delete-task-btn').style.display = 'none';
+            document.querySelector('.delete-task-btn').style.display = 'none';
         }
         
         function openEditTaskModal(taskId) {
@@ -1695,9 +1795,7 @@ function normalizeParentIds() {
                 document.getElementById('taskStatus').value = task.status;
                 updateParentTaskOptions(task.parentId);
                 document.getElementById('taskModal').style.display = 'block';
-
-                // 削除ボタンを表示（この行を追加）
-        document.querySelector('.delete-task-btn').style.display = 'inline-block';
+                document.querySelector('.delete-task-btn').style.display = 'inline-block';
             }
         }
         
@@ -1717,127 +1815,119 @@ function normalizeParentIds() {
         }
         
         function closeModal() {
-    document.getElementById('taskModal').style.display = 'none';
-}
+            document.getElementById('taskModal').style.display = 'none';
+        }
 
-// タスクを削除
-function deleteTask() {
-    if (!editingTaskId) return;
-    
-    // 確認ダイアログを表示
-    const confirmDiv = document.createElement('div');
-    confirmDiv.className = 'modal';
-    confirmDiv.style.display = 'block';
-    confirmDiv.innerHTML = `
-        <div class="confirm-dialog">
-            <h3>タスクを削除しますか？</h3>
-            <p>この操作は取り消せません。<br>子タスクも一緒に削除されます。</p>
-            <div class="confirm-buttons">
-                <button class="btn-secondary" onclick="this.closest('.modal').remove()">キャンセル</button>
-                <button class="btn-primary delete-task-btn" onclick="confirmDelete()">削除する</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(confirmDiv);
-}
-
-// 削除を確定
-function confirmDelete() {
-    if (!editingTaskId) return;
-    
-    // 削除するタスクのIDを収集（子タスクも含む）
-    const idsToDelete = [];
-    collectTaskWithChildren(editingTaskId, idsToDelete);
-    
-    // タスクを削除
-    tasks = tasks.filter(task => !idsToDelete.some(t => t.id === task.id));
-    
-    // モーダルを閉じる
-    document.querySelector('.modal:last-child').remove();
-    closeModal();
-    
-    // 保存と再描画
-    normalizeParentIds();
-    saveTasksToStorage();
-    renderGanttChart();
-    renderKanban();
-    
-    showSuccessMessage('タスクを削除しました');
-}
-
-// 成功メッセージを表示
-function showSuccessMessage(message) {
-    const successDiv = document.createElement('div');
-    successDiv.className = 'success-message';
-    successDiv.textContent = message;
-    successDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #d4edda;
-        color: #155724;
-        padding: 12px 24px;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        z-index: 1002;
-    `;
-    document.body.appendChild(successDiv);
-    
-    setTimeout(() => {
-        successDiv.remove();
-    }, 3000);
-}
-
-// タスクの保存
-document.getElementById('taskForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const taskData = {
-        name: document.getElementById('taskName').value,
-        assignee: document.getElementById('taskAssignee').value,
-        start: document.getElementById('taskStart').value,
-        end: document.getElementById('taskEnd').value,
-        status: document.getElementById('taskStatus').value,
-        parentId: document.getElementById('parentTask').value ? parseInt(document.getElementById('parentTask').value) : null
-    };
-    
-    if (editingTaskId) {
-        // 既存タスクの更新
-        const task = tasks.find(t => t.id === editingTaskId);
-        if (task) {
-            Object.assign(task, taskData);
+        // タスクを削除
+        function deleteTask() {
+            if (!editingTaskId) return;
             
-            // レベルの更新
-            if (taskData.parentId === null) {
-                task.level = 0;
+            const confirmDiv = document.createElement('div');
+            confirmDiv.className = 'modal';
+            confirmDiv.style.display = 'block';
+            confirmDiv.innerHTML = `
+                <div class="confirm-dialog">
+                    <h3>タスクを削除しますか？</h3>
+                    <p>この操作は取り消せません。<br>子タスクも一緒に削除されます。</p>
+                    <div class="confirm-buttons">
+                        <button class="btn-secondary" onclick="this.closest('.modal').remove()">キャンセル</button>
+                        <button class="btn-primary delete-task-btn" onclick="confirmDelete()">削除する</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmDiv);
+        }
+
+        // 削除を確定
+        function confirmDelete() {
+            if (!editingTaskId) return;
+            
+            const idsToDelete = [];
+            collectTaskWithChildren(editingTaskId, idsToDelete);
+            
+            tasks = tasks.filter(task => !idsToDelete.some(t => t.id === task.id));
+            
+            document.querySelector('.modal:last-child').remove();
+            closeModal();
+            
+            normalizeParentIds();
+            saveTasksToStorage();
+            renderGanttChart();
+            renderKanban();
+            
+            showSuccessMessage('タスクを削除しました');
+        }
+
+        // 成功メッセージを表示
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            successDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #d4edda;
+                color: #155724;
+                padding: 12px 24px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                z-index: 1002;
+            `;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        // タスクの保存
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const taskData = {
+                name: document.getElementById('taskName').value,
+                assignee: document.getElementById('taskAssignee').value,
+                start: document.getElementById('taskStart').value,
+                end: document.getElementById('taskEnd').value,
+                status: document.getElementById('taskStatus').value,
+                parentId: document.getElementById('parentTask').value ? parseInt(document.getElementById('parentTask').value) : null
+            };
+            
+            if (editingTaskId) {
+                const task = tasks.find(t => t.id === editingTaskId);
+                if (task) {
+                    Object.assign(task, taskData);
+                    
+                    if (taskData.parentId === null) {
+                        task.level = 0;
+                    } else {
+                        const parent = tasks.find(t => t.id === taskData.parentId);
+                        task.level = parent ? parent.level + 1 : 0;
+                    }
+                }
             } else {
-                const parent = tasks.find(t => t.id === taskData.parentId);
-                task.level = parent ? parent.level + 1 : 0;
+                const newTask = {
+                    id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+                    ...taskData,
+                    level: 0
+                };
+                
+                if (taskData.parentId !== null) {
+                    const parent = tasks.find(t => t.id === taskData.parentId);
+                    newTask.level = parent ? parent.level + 1 : 0;
+                }
+                
+                tasks.push(newTask);
             }
-        }
-    } else {
-        // 新規タスクの追加
-        const newTask = {
-            id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
-            ...taskData,
-            level: 0
-        };
-        
-        if (taskData.parentId !== null) {
-            const parent = tasks.find(t => t.id === taskData.parentId);
-            newTask.level = parent ? parent.level + 1 : 0;
-        }
-        
-        tasks.push(newTask);
-    }
-    
-    closeModal();
-    normalizeParentIds();
-    saveTasksToStorage();
-    renderGanttChart();
-    renderKanban();
-});
+            
+            closeModal();
+            normalizeParentIds();
+            saveTasksToStorage();
+            renderGanttChart();
+            renderKanban();
+        });
         
         // モーダル外クリックで閉じる
         window.onclick = function(event) {
