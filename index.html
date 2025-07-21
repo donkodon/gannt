@@ -1121,40 +1121,60 @@
 }, 100);
         }
         
-        // 今日の位置にスクロールして赤い線を追加
-        function scrollToTodayWithRedLine() {
-            const ganttBody = document.getElementById('ganttBody');
-            if (!ganttBody) return;
-            
-            const today = new Date();
-            const startDate = new Date('2025-01-01');
-            const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-            
-            // 10日前の位置にスクロール
-            const scrollPosition = Math.max(0, (daysDiff - 10) * 30);
-            ganttBody.scrollLeft = scrollPosition;
-            
-            // 赤い線を追加
-            addTodayLine();
-        }
+       // 今日の位置にスクロールして赤い線を追加
+function scrollToTodayWithRedLine() {
+    const ganttBody = document.getElementById('ganttBody');
+    if (!ganttBody) return;
+    
+    const todayLine = document.querySelector('.today-line');
+    if (todayLine) {
+        const todayPosition = parseInt(todayLine.style.left) || 0;
+        const scrollPosition = Math.max(0, todayPosition - 300);
+        ganttBody.scrollLeft = scrollPosition;
+    } else if (window._ganttStartDate) {
+        const today = new Date();
+        const daysDiff = Math.floor((today - window._ganttStartDate) / (1000 * 60 * 60 * 24));
+        const scrollPosition = Math.max(0, ((daysDiff + 1) - 10) * 30);
+        ganttBody.scrollLeft = scrollPosition;
+    }
+    
+    addTodayLine(window._ganttStartDate, window._ganttTotalDays);
+}
         
         // 今日の位置に赤い線を追加
-        function addTodayLine() {
-            const today = new Date();
-            const startDate = new Date('2025-01-01');
-            const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-            const todayPosition = (daysDiff + 1) * 30;
-            
-            const timelineRows = document.querySelectorAll('.timeline-row');
-            timelineRows.forEach(row => {
-                const existingLine = row.querySelector('.today-line');
-                if (existingLine) existingLine.remove();
-                
-                const todayLine = document.createElement('div');
-                todayLine.className = 'today-line';
-                todayLine.style.left = `${todayPosition}px`;
-                row.appendChild(todayLine);
-            });
+function addTodayLine(startDate, totalDays) {
+    if (!startDate) {
+        let minDate = null;
+        tasks.forEach(task => {
+            const start = new Date(task.start);
+            if (!minDate || start < minDate) minDate = start;
+        });
+        
+        if (!minDate) minDate = new Date();
+        
+        startDate = new Date(minDate);
+        startDate.setMonth(startDate.getMonth() - 1);
+        startDate.setDate(1);
+    }
+    
+    const today = new Date();
+    const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+    
+    if (daysDiff < 0 || (totalDays && daysDiff > totalDays)) return;
+    
+    // 1日進める
+    const todayPosition = (daysDiff + 1) * 30;
+    
+    const timelineRows = document.querySelectorAll('.timeline-row');
+    timelineRows.forEach(row => {
+        const existingLine = row.querySelector('.today-line');
+        if (existingLine) existingLine.remove();
+        
+        const todayLine = document.createElement('div');
+        todayLine.className = 'today-line';
+        todayLine.style.left = `${todayPosition}px`;
+        row.appendChild(todayLine);
+    });
         }
         
         // 13行目以降の背景を白に修正
@@ -1701,175 +1721,219 @@ function updateTaskListDisplay() {
         }
         
         // ガントチャートの描画
-        function renderGanttChart() {
-            const taskList = document.getElementById('taskList');
-            const timeline = document.getElementById('timeline');
-            const timelineHeader = document.getElementById('timelineHeader');
-            
-            taskList.innerHTML = '';
-            timeline.innerHTML = '';
-            timelineHeader.innerHTML = '';
-            
-            const startDate = new Date('2025-01-01');
-            const endDate = new Date('2025-12-31');
-            const totalDays = 365;
-            
-            const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-            const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-            
-            months.forEach((month, index) => {
-                const monthHeader = document.createElement('div');
-                monthHeader.className = 'month-header';
-                monthHeader.textContent = month;
-                monthHeader.style.width = `${monthDays[index] * 30}px`;
-                timelineHeader.appendChild(monthHeader);
-            });
-            
-            const flatTaskList = getFlatTaskList();
-            
-            flatTaskList.forEach((task, index) => {
-                const visible = isTaskVisible(task);
-                const progress = calculateProgress(task.id);
-                
-                const taskRow = document.createElement('div');
-                taskRow.className = 'task-row';
-                if (!visible) taskRow.classList.add('hidden');
-                taskRow.draggable = true;
-                taskRow.dataset.taskId = task.id;
-                taskRow.dataset.index = index;
-                
-                if (task.level === 0) {
-                    taskRow.classList.add('parent-task');
-                } else if (task.level === 1) {
-                    taskRow.classList.add('child-task');
-                } else {
-                    taskRow.classList.add('grandchild-task');
-                }
-                
-                const hasChildTasks = hasChildren(task.id);
-                if (hasChildTasks) {
-                    const collapseBtn = document.createElement('button');
-                    collapseBtn.className = 'collapse-btn';
-                    if (collapsedTasks.has(task.id)) {
-                        collapseBtn.classList.add('collapsed');
-                    }
-                    collapseBtn.innerHTML = '▼';
-                    collapseBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        toggleCollapse(task.id);
-                    };
-                    taskRow.appendChild(collapseBtn);
-                }
-                
-                const taskContent = document.createElement('div');
-taskContent.className = 'task-content';
-
-// 期限または完了表示を作成
-let deadlineHTML = '';
-if (progress === 100) {
-    deadlineHTML = `<div class="task-deadline" style="margin-right: 10px; padding: 4px 10px; background-color: #d4edda; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #155724; font-weight: 600;">完了</div>`;
-} else {
-    const endDate = new Date(task.end);
-    const year = endDate.getFullYear().toString().substr(-2);
-    const month = (endDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = endDate.getDate().toString().padStart(2, '0');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    let deadlineStyle = 'margin-right: 10px; padding: 4px 10px; background-color: #fff3cd; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #856404;';
-    if (endDate < today) {
-        deadlineStyle = 'margin-right: 10px; padding: 4px 10px; background-color: #f8d7da; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #721c24;';
-    }
-    
-    deadlineHTML = `<div class="task-deadline" style="${deadlineStyle}">${year}/${month}/${day}</div>`;
-}
-
-taskContent.innerHTML = `
-    <div class="task-name">${task.name}</div>
-    <div class="task-assignee">${task.assignee || '未割当'}</div>
-    ${deadlineHTML}
-    <div class="task-progress">${progress}%</div>
-`;
-                taskRow.appendChild(taskContent);
-                
-                taskRow.addEventListener('dragstart', handleDragStart);
-                taskRow.addEventListener('dragover', handleDragOver);
-                taskRow.addEventListener('drop', handleDrop);
-                taskRow.addEventListener('dragend', handleDragEnd);
-                taskRow.addEventListener('click', () => openEditTaskModal(task.id));
-                
-                const timelineRow = document.createElement('div');
-                timelineRow.className = 'timeline-row';
-                if (!visible) timelineRow.classList.add('hidden');
-                timelineRow.dataset.taskId = task.id;
-                timelineRow.dataset.index = index;
-                
-                const gridContainer = document.createElement('div');
-                gridContainer.className = 'timeline-grid';
-                
-                for (let i = 0; i < totalDays; i++) {
-                    const gridCell = document.createElement('div');
-                    gridCell.className = 'grid-cell';
-                    const date = new Date(startDate);
-                    date.setDate(startDate.getDate() + i);
-                    if (date.getDay() === 0 || date.getDay() === 6) {
-                        gridCell.classList.add('weekend');
-                    }
-                    gridContainer.appendChild(gridCell);
-                }
-                
-                timelineRow.appendChild(gridContainer);
-                
-                const taskStart = new Date(task.start);
-                const taskEnd = new Date(task.end);
-                const startOffset = Math.max(0, Math.floor((taskStart - startDate) / (1000 * 60 * 60 * 24)));
-                const endOffset = Math.min(totalDays - 1, Math.floor((taskEnd - startDate) / (1000 * 60 * 60 * 24)));
-                const duration = endOffset - startOffset + 1;
-                
-                if (startOffset < totalDays && endOffset >= 0) {
-                    const taskBar = document.createElement('div');
-                    taskBar.className = 'task-bar';
-                    if (task.level === 1) taskBar.classList.add('child-bar');
-                    if (task.level === 2) taskBar.classList.add('grandchild-bar');
-                    
-                    taskBar.style.left = `${startOffset * 30}px`;
-                    taskBar.style.width = `${duration * 30}px`;
-                    
-                    if (progress > 0 && progress < 100) {
-                        const progressFill = document.createElement('div');
-                        progressFill.className = 'progress-fill';
-                        progressFill.style.width = `${progress}%`;
-                        taskBar.appendChild(progressFill);
-                    }
-                    
-                    const progressText = document.createElement('span');
-                    progressText.className = 'progress-text';
-                    progressText.textContent = `${progress}%`;
-                    taskBar.appendChild(progressText);
-                    
-                    if (progress === 100) {
-                        taskBar.style.opacity = '0.9';
-                    }
-                    
-                    timelineRow.appendChild(taskBar);
-                }
-                
-                taskList.appendChild(taskRow);
-                timeline.appendChild(timelineRow);
-            });
-            
-            const timelineWidth = totalDays * 30;
-            timeline.style.width = `${timelineWidth}px`;
-            timelineHeader.style.width = `${timelineWidth}px`;
-            
-            // 再描画後に追加機能を実行
-            setTimeout(() => {
-    addTodayLine();
-    fixBackgroundColors();
-    // updateTaskListDisplay(); // 不要になったのでコメントアウト
-    enableResize();
-}, 50);
+function renderGanttChart() {
+    try {
+        const taskList = document.getElementById('taskList');
+        const timeline = document.getElementById('timeline');
+        const timelineHeader = document.getElementById('timelineHeader');
+        
+        if (!taskList || !timeline || !timelineHeader) {
+            console.error('必要な要素が見つかりません');
+            return;
         }
+        
+        taskList.innerHTML = '';
+        timeline.innerHTML = '';
+        timelineHeader.innerHTML = '';
+        
+        // 動的な日付範囲を計算
+        let minDate = null;
+        let maxDate = null;
+        
+        tasks.forEach(task => {
+            const start = new Date(task.start);
+            const end = new Date(task.end);
+            
+            if (!minDate || start < minDate) minDate = start;
+            if (!maxDate || end > maxDate) maxDate = end;
+        });
+        
+        // デフォルト値の設定
+        if (!minDate || !maxDate) {
+            const now = new Date();
+            minDate = new Date(now.getFullYear(), 0, 1);
+            maxDate = new Date(now.getFullYear(), 11, 31);
+        }
+        
+        // 前後に余裕を持たせる
+        const startDate = new Date(minDate);
+        startDate.setMonth(startDate.getMonth() - 1);
+        startDate.setDate(1);
+        
+        const endDate = new Date(maxDate);
+        endDate.setMonth(endDate.getMonth() + 2);
+        endDate.setDate(0);
+        
+        // 総日数を計算
+        const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        
+        // startDateとtotalDaysを保存
+        window._ganttStartDate = startDate;
+        window._ganttTotalDays = totalDays;
+        
+        // 月ヘッダーを生成
+        const currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const monthHeader = document.createElement('div');
+            monthHeader.className = 'month-header';
+            monthHeader.textContent = `${year}年${month + 1}月`;
+            monthHeader.style.width = `${daysInMonth * 30}px`;
+            timelineHeader.appendChild(monthHeader);
+            
+            currentDate.setMonth(currentDate.getMonth() + 1);
+        }
+        
+        const flatTaskList = getFlatTaskList();
+        
+        flatTaskList.forEach((task, index) => {
+            const visible = isTaskVisible(task);
+            const progress = calculateProgress(task.id);
+            
+            const taskRow = document.createElement('div');
+            taskRow.className = 'task-row';
+            if (!visible) taskRow.classList.add('hidden');
+            taskRow.draggable = true;
+            taskRow.dataset.taskId = task.id;
+            taskRow.dataset.index = index;
+            
+            if (task.level === 0) {
+                taskRow.classList.add('parent-task');
+            } else if (task.level === 1) {
+                taskRow.classList.add('child-task');
+            } else {
+                taskRow.classList.add('grandchild-task');
+            }
+            
+            const hasChildTasks = hasChildren(task.id);
+            if (hasChildTasks) {
+                const collapseBtn = document.createElement('button');
+                collapseBtn.className = 'collapse-btn';
+                if (collapsedTasks.has(task.id)) {
+                    collapseBtn.classList.add('collapsed');
+                }
+                collapseBtn.innerHTML = '▼';
+                collapseBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleCollapse(task.id);
+                };
+                taskRow.appendChild(collapseBtn);
+            }
+            
+            const taskContent = document.createElement('div');
+            taskContent.className = 'task-content';
+
+            let deadlineHTML = '';
+            if (progress === 100) {
+                deadlineHTML = `<div class="task-deadline" style="margin-right: 10px; padding: 4px 10px; background-color: #d4edda; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #155724; font-weight: 600;">完了</div>`;
+            } else {
+                const taskEndDate = new Date(task.end);
+                const year = taskEndDate.getFullYear().toString().substr(-2);
+                const month = (taskEndDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = taskEndDate.getDate().toString().padStart(2, '0');
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                let deadlineStyle = 'margin-right: 10px; padding: 4px 10px; background-color: #fff3cd; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #856404;';
+                if (taskEndDate < today) {
+                    deadlineStyle = 'margin-right: 10px; padding: 4px 10px; background-color: #f8d7da; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #721c24;';
+                }
+                
+                deadlineHTML = `<div class="task-deadline" style="${deadlineStyle}">${year}/${month}/${day}</div>`;
+            }
+
+            taskContent.innerHTML = `
+                <div class="task-name">${task.name}</div>
+                <div class="task-assignee">${task.assignee || '未割当'}</div>
+                ${deadlineHTML}
+                <div class="task-progress">${progress}%</div>
+            `;
+            taskRow.appendChild(taskContent);
+            
+            taskRow.addEventListener('dragstart', handleDragStart);
+            taskRow.addEventListener('dragover', handleDragOver);
+            taskRow.addEventListener('drop', handleDrop);
+            taskRow.addEventListener('dragend', handleDragEnd);
+            taskRow.addEventListener('click', () => openEditTaskModal(task.id));
+            
+            const timelineRow = document.createElement('div');
+            timelineRow.className = 'timeline-row';
+            if (!visible) timelineRow.classList.add('hidden');
+            timelineRow.dataset.taskId = task.id;
+            timelineRow.dataset.index = index;
+            
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'timeline-grid';
+            
+            for (let i = 0; i < totalDays; i++) {
+                const gridCell = document.createElement('div');
+                gridCell.className = 'grid-cell';
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                if (date.getDay() === 0 || date.getDay() === 6) {
+                    gridCell.classList.add('weekend');
+                }
+                gridContainer.appendChild(gridCell);
+            }
+            
+            timelineRow.appendChild(gridContainer);
+            
+            const taskStart = new Date(task.start);
+            const taskEnd = new Date(task.end);
+            const startOffset = Math.max(0, Math.floor((taskStart - startDate) / (1000 * 60 * 60 * 24)));
+            const endOffset = Math.min(totalDays - 1, Math.floor((taskEnd - startDate) / (1000 * 60 * 60 * 24)));
+            const duration = endOffset - startOffset + 1;
+            
+            if (startOffset < totalDays && endOffset >= 0) {
+                const taskBar = document.createElement('div');
+                taskBar.className = 'task-bar';
+                if (task.level === 1) taskBar.classList.add('child-bar');
+                if (task.level === 2) taskBar.classList.add('grandchild-bar');
+                
+                taskBar.style.left = `${startOffset * 30}px`;
+                taskBar.style.width = `${duration * 30}px`;
+                
+                if (progress > 0 && progress < 100) {
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'progress-fill';
+                    progressFill.style.width = `${progress}%`;
+                    taskBar.appendChild(progressFill);
+                }
+                
+                const progressText = document.createElement('span');
+                progressText.className = 'progress-text';
+                progressText.textContent = `${progress}%`;
+                taskBar.appendChild(progressText);
+                
+                if (progress === 100) {
+                    taskBar.style.opacity = '0.9';
+                }
+                
+                timelineRow.appendChild(taskBar);
+            }
+            
+            taskList.appendChild(taskRow);
+            timeline.appendChild(timelineRow);
+        });
+        
+        const timelineWidth = totalDays * 30;
+        timeline.style.width = `${timelineWidth}px`;
+        timelineHeader.style.width = `${timelineWidth}px`;
+        
+        // 再描画後に追加機能を実行
+        setTimeout(() => {
+            addTodayLine(startDate, totalDays);
+            fixBackgroundColors();
+            enableResize();
+        }, 50);
+        
+    } catch (error) {
+        console.error('renderGanttChart エラー:', error);
+    }
+}
         
         // カンバンの描画
         function renderKanban() {
