@@ -1113,11 +1113,12 @@
             
             // 追加機能の実行
             setTimeout(() => {
-                scrollToTodayWithRedLine();
-                fixBackgroundColors();
-                optimizePerformance();
-                enableResize();
-            }, 100);
+    scrollToTodayWithRedLine();
+    fixBackgroundColors();
+    optimizePerformance();
+    enableResize();
+    // updateTaskListDisplay(); // 不要になったのでコメントアウト
+}, 100);
         }
         
         // 今日の位置にスクロールして赤い線を追加
@@ -1286,58 +1287,60 @@
         }
         
         // 期限表示を更新する関数
-        function updateTaskListDisplay() {
-            const taskRows = document.querySelectorAll('.task-row');
+function updateTaskListDisplay() {
+    const taskRows = document.querySelectorAll('.task-row');
+    
+    taskRows.forEach(row => {
+        const taskId = parseInt(row.dataset.taskId);
+        const task = tasks.find(t => t.id === taskId);
+        
+        if (task) {
+            const taskContent = row.querySelector('.task-content');
+            const taskAssignee = taskContent.querySelector('.task-assignee');
             
-            taskRows.forEach(row => {
-                const taskId = parseInt(row.dataset.taskId);
-                const task = tasks.find(t => t.id === taskId);
+            // 既存の期限表示を削除
+            const existingDeadline = taskContent.querySelector('.task-deadline');
+            if (existingDeadline) {
+                existingDeadline.remove();
+            }
+            
+            // 進捗率を計算
+            const progress = calculateProgress(task.id);
+            
+            // 期限表示要素を作成
+            const deadlineElement = document.createElement('div');
+            deadlineElement.className = 'task-deadline';
+            
+            if (progress === 100) {
+                // 完了表示
+                deadlineElement.style.cssText = 'margin-right: 10px; padding: 4px 10px; background-color: #d4edda; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #155724; font-weight: 600;';
+                deadlineElement.textContent = '完了';
+            } else {
+                // 期限日付表示
+                const endDate = new Date(task.end);
+                const year = endDate.getFullYear().toString().substr(-2);
+                const month = (endDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = endDate.getDate().toString().padStart(2, '0');
                 
-                if (task) {
-                    const taskContent = row.querySelector('.task-content');
-                    const taskAssignee = taskContent.querySelector('.task-assignee');
-                    
-                    // 既存の期限表示を削除
-                    const existingDeadline = taskContent.querySelector('.task-deadline');
-                    if (existingDeadline) {
-                        existingDeadline.remove();
-                    }
-                    
-                    // 期限表示要素を作成
-                    const deadlineElement = document.createElement('div');
-                    deadlineElement.className = 'task-deadline';
-                    deadlineElement.style.cssText = `
-                        margin-right: 10px;
-                        padding: 4px 10px;
-                        background-color: #fff3cd;
-                        border-radius: 15px;
-                        font-size: 12px;
-                        white-space: nowrap;
-                        color: #856404;
-                    `;
-                    
-                    // 日付をフォーマット
-                    const endDate = new Date(task.end);
-                    const year = endDate.getFullYear().toString().substr(-2);
-                    const month = (endDate.getMonth() + 1).toString().padStart(2, '0');
-                    const day = endDate.getDate().toString().padStart(2, '0');
-                    deadlineElement.textContent = `${year}/${month}/${day}`;
-                    
-                    // 期限チェック
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    if (endDate < today) {
-                        deadlineElement.style.backgroundColor = '#f8d7da';
-                        deadlineElement.style.color = '#721c24';
-                    }
-                    
-                    // 担当者の後に挿入
-                    if (taskAssignee) {
-                        taskAssignee.after(deadlineElement);
-                    }
+                deadlineElement.style.cssText = 'margin-right: 10px; padding: 4px 10px; background-color: #fff3cd; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #856404;';
+                deadlineElement.textContent = `${year}/${month}/${day}`;
+                
+                // 期限切れチェック
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (endDate < today) {
+                    deadlineElement.style.backgroundColor = '#f8d7da';
+                    deadlineElement.style.color = '#721c24';
                 }
-            });
+            }
+            
+            // 担当者の後に挿入
+            if (taskAssignee) {
+                taskAssignee.after(deadlineElement);
+            }
         }
+    });
+}
         
         // Firebase接続状態の監視
         function setupConnectionMonitoring() {
@@ -1759,12 +1762,34 @@
                 }
                 
                 const taskContent = document.createElement('div');
-                taskContent.className = 'task-content';
-                taskContent.innerHTML = `
-                    <div class="task-name">${task.name}</div>
-                    <div class="task-assignee">${task.assignee || '未割当'}</div>
-                    <div class="task-progress">${progress}%</div>
-                `;
+taskContent.className = 'task-content';
+
+// 期限または完了表示を作成
+let deadlineHTML = '';
+if (progress === 100) {
+    deadlineHTML = `<div class="task-deadline" style="margin-right: 10px; padding: 4px 10px; background-color: #d4edda; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #155724; font-weight: 600;">完了</div>`;
+} else {
+    const endDate = new Date(task.end);
+    const year = endDate.getFullYear().toString().substr(-2);
+    const month = (endDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = endDate.getDate().toString().padStart(2, '0');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let deadlineStyle = 'margin-right: 10px; padding: 4px 10px; background-color: #fff3cd; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #856404;';
+    if (endDate < today) {
+        deadlineStyle = 'margin-right: 10px; padding: 4px 10px; background-color: #f8d7da; border-radius: 15px; font-size: 12px; white-space: nowrap; color: #721c24;';
+    }
+    
+    deadlineHTML = `<div class="task-deadline" style="${deadlineStyle}">${year}/${month}/${day}</div>`;
+}
+
+taskContent.innerHTML = `
+    <div class="task-name">${task.name}</div>
+    <div class="task-assignee">${task.assignee || '未割当'}</div>
+    ${deadlineHTML}
+    <div class="task-progress">${progress}%</div>
+`;
                 taskRow.appendChild(taskContent);
                 
                 taskRow.addEventListener('dragstart', handleDragStart);
@@ -1839,11 +1864,11 @@
             
             // 再描画後に追加機能を実行
             setTimeout(() => {
-                addTodayLine();
-                fixBackgroundColors();
-                updateTaskListDisplay();
-                enableResize();
-            }, 50);
+    addTodayLine();
+    fixBackgroundColors();
+    // updateTaskListDisplay(); // 不要になったのでコメントアウト
+    enableResize();
+}, 50);
         }
         
         // カンバンの描画
