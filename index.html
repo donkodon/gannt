@@ -202,6 +202,51 @@
         .collapse-btn.collapsed {
             transform: rotate(-90deg);
         }
+        /* ===== ここから追加 ===== */
+/* 折りたたみボタンの位置調整 */
+.task-row.parent-task {
+    padding-left: 15px !important;
+}
+
+.task-row.parent-task .collapse-btn {
+    left: 5px !important;
+}
+
+.task-row.parent-task .task-content {
+    padding-left: 25px !important;
+}
+
+.task-row.child-task {
+    padding-left: 40px !important;
+}
+
+.task-row.child-task .collapse-btn {
+    left: 30px !important;
+}
+
+.task-row.child-task .task-content {
+    padding-left: 25px !important;
+}
+
+.task-row.grandchild-task {
+    padding-left: 70px !important;
+}
+
+.task-row.grandchild-task .task-content {
+    padding-left: 0 !important;
+}
+
+/* ドラッグ&ドロップの視覚的フィードバック */
+.task-row.drag-over-top {
+    border-top: 3px solid #007bff !important;
+}
+
+.task-row.drag-over-bottom {
+    border-bottom: 3px solid #007bff !important;
+}
+/* ===== ここまで追加 ===== */
+
+
         
         .task-row.child-task .collapse-btn {
             left: 35px;
@@ -533,47 +578,67 @@
         }
         
         /* モーダルスタイル */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translate(-50%, -60%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, -50%);
-                opacity: 1;
-            }
-        }
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+    overflow-y: auto; /* 追加 */
+}
+
+.modal-content {
+    position: relative; /* absolute から relative に変更 */
+    margin: 50px auto; /* 追加 */
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease;
+    max-height: 90vh; /* 追加 */
+    overflow-y: auto; /* 追加 */
+}
+
+/* スクロールバーのスタイリング */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
         
         .modal-header {
             font-size: 20px;
@@ -679,7 +744,17 @@
         .gantt-body::-webkit-scrollbar-corner {
             background: #f1f1f1;
         }
-        
+        /* ===== ここに追加 ===== */
+/* ドラッグ&ドロップの視覚的フィードバック */
+.task-row.drag-over-top {
+    border-top: 3px solid #007bff !important;
+}
+
+.task-row.drag-over-bottom {
+    border-bottom: 3px solid #007bff !important;
+}
+/* ===== ここまで ===== */
+
         /* タスク削除ボタン */
         .delete-task-btn {
             background-color: #dc3545;
@@ -873,6 +948,80 @@
         .resize-overlay.active {
             display: block;
         }
+         /* ===== ここに追加 ===== */
+        /* === 3つの改善機能のスタイル（追加分） === */
+        
+        /* 1. モーダルスクロールの修正（既存の.modalと.modal-contentを上書き） */
+        .modal {
+            overflow-y: auto !important;
+        }
+        
+        .modal-content {
+            position: relative !important;
+            margin: 50px auto !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+        }
+        
+        /* 2. 折りたたみボタンの位置調整（既存のスタイルを上書き） */
+        .task-row.parent-task {
+            padding-left: 15px !important;
+        }
+        
+        .task-row.parent-task .collapse-btn {
+            left: 5px !important;
+        }
+        
+        .task-row.parent-task .task-content {
+            padding-left: 25px !important;
+        }
+        
+        .task-row.child-task {
+            padding-left: 40px !important;
+        }
+        
+        .task-row.child-task .collapse-btn {
+            left: 30px !important;
+        }
+        
+        .task-row.child-task .task-content {
+            padding-left: 25px !important;
+        }
+        
+        .task-row.grandchild-task {
+            padding-left: 70px !important;
+        }
+        
+        .task-row.grandchild-task .task-content {
+            padding-left: 0 !important;
+        }
+        
+        .collapse-btn {
+            background-color: white !important;
+            z-index: 1 !important;
+        }
+        
+        .task-row:hover .collapse-btn {
+            background-color: #e3f2fd !important;
+        }
+        
+        .task-row.parent-task:hover .collapse-btn {
+            background-color: #e3f2fd !important;
+        }
+        
+        /* 3. ドラッグ&ドロップの視覚的フィードバック */
+        .task-row.drag-over-top {
+            border-top: 3px solid #007bff !important;
+        }
+        
+        .task-row.drag-over-bottom {
+            border-bottom: 3px solid #007bff !important;
+        }
+        
+        .task-row.drag-over {
+            border-top: none !important;
+        }
+        /* ===== ここまで追加 ===== */
     </style>
 </head>
 <body>
@@ -2036,32 +2185,51 @@ function renderGanttChart() {
         }
         
         function handleDragOver(e) {
-            e.preventDefault();
-            if (draggedElement && e.currentTarget !== draggedElement) {
-                e.currentTarget.classList.add('drag-over');
-            }
-        }
+    e.preventDefault();
+    if (draggedElement && e.currentTarget !== draggedElement) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const height = rect.height;
         
-        function handleDrop(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('drag-over');
-            
-            if (draggedElement && e.currentTarget !== draggedElement) {
-                const targetId = parseInt(e.currentTarget.dataset.taskId);
-                reorderTasks(draggedTaskId, targetId);
-            }
-        }
+        // 既存のクラスを削除
+        e.currentTarget.classList.remove('drag-over', 'drag-over-top', 'drag-over-bottom');
         
-        function handleDragEnd(e) {
-            document.querySelectorAll('.dragging').forEach(elem => {
-                elem.classList.remove('dragging');
-            });
-            document.querySelectorAll('.drag-over').forEach(elem => {
-                elem.classList.remove('drag-over');
-            });
-            draggedElement = null;
-            draggedTaskId = null;
+        // 位置に応じてクラスを追加
+        if (y < height / 2) {
+            e.currentTarget.classList.add('drag-over-top');
+        } else {
+            e.currentTarget.classList.add('drag-over-bottom');
         }
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over', 'drag-over-top', 'drag-over-bottom');
+    
+    if (draggedElement && e.currentTarget !== draggedElement) {
+        const targetId = parseInt(e.currentTarget.dataset.taskId);
+        const rect = e.currentTarget.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const height = rect.height;
+        
+        // マウスの位置で前後を判定
+        const insertBefore = y < height / 2;
+        
+        reorderTasks(draggedTaskId, targetId, insertBefore);
+    }
+}
+
+function handleDragEnd(e) {
+    document.querySelectorAll('.dragging').forEach(elem => {
+        elem.classList.remove('dragging');
+    });
+    document.querySelectorAll('.drag-over, .drag-over-top, .drag-over-bottom').forEach(elem => {
+        elem.classList.remove('drag-over', 'drag-over-top', 'drag-over-bottom');
+    });
+    draggedElement = null;
+    draggedTaskId = null;
+}
         
         // カンバンのドラッグ＆ドロップ
         function handleKanbanDragStart(e) {
@@ -2089,34 +2257,44 @@ function renderGanttChart() {
             draggedTaskId = null;
         }
         
-        // タスクの順序変更
-        function reorderTasks(draggedId, targetId) {
-            const draggedTask = tasks.find(t => t.id === draggedId);
-            const targetTask = tasks.find(t => t.id === targetId);
-            
-            if (!draggedTask || !targetTask) return;
-            if (draggedTask.level !== targetTask.level) return;
-            if (draggedTask.parentId !== targetTask.parentId) return;
-            
-            const tasksToMove = [];
-            collectTaskWithChildren(draggedId, tasksToMove);
-            
-            tasksToMove.forEach(task => {
-                const index = tasks.findIndex(t => t.id === task.id);
-                if (index > -1) tasks.splice(index, 1);
-            });
-            
-            const targetIndex = tasks.findIndex(t => t.id === targetId);
-            if (targetIndex > -1) {
-                tasks.splice(targetIndex + 1, 0, ...tasksToMove);
-            } else {
-                tasks.push(...tasksToMove);
-            }
-            
-            saveTasksToStorage();
-            renderGanttChart();
-            renderKanban();
-        }
+        // タスクの順序変更（改善版）
+function reorderTasks(draggedId, targetId, insertBefore = false) {
+    const draggedTask = tasks.find(t => t.id === draggedId);
+    const targetTask = tasks.find(t => t.id === targetId);
+    
+    if (!draggedTask || !targetTask) return;
+    if (draggedTask.level !== targetTask.level) return;
+    if (draggedTask.parentId !== targetTask.parentId) return;
+    
+    const tasksToMove = [];
+    collectTaskWithChildren(draggedId, tasksToMove);
+    
+    // タスクを一時的に削除
+    tasksToMove.forEach(task => {
+        const index = tasks.findIndex(t => t.id === task.id);
+        if (index > -1) tasks.splice(index, 1);
+    });
+    
+    // 新しい挿入位置を計算
+    let insertIndex = tasks.findIndex(t => t.id === targetId);
+    
+    if (!insertBefore) {
+        // ターゲットの後に挿入
+        insertIndex = insertIndex + 1;
+    }
+    
+    // タスクを挿入
+    if (insertIndex >= 0) {
+        tasks.splice(insertIndex, 0, ...tasksToMove);
+    } else {
+        tasks.push(...tasksToMove);
+    }
+    
+    saveTasksToStorage();
+    renderGanttChart();
+    renderKanban();
+}
+
         
         // タスクとその子タスクを収集
         function collectTaskWithChildren(taskId, result) {
