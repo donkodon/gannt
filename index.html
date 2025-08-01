@@ -868,6 +868,7 @@
     width: 250px !important;
     font-size: 12px;
     padding: 10px;
+    background-color: white !important; /* この行を追加 */
 }
             
             .task-list-header {
@@ -876,12 +877,18 @@
             }
             
             /* タスク行の調整 */
-            .task-row {
-                padding: 8px;
-                height: 40px;
-                min-height: 40px;
-                max-height: 40px;
-            }
+.task-row {
+    padding: 8px;
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    background-color: white !important; /* この行を追加 */
+}
+
+/* 親タスクの背景色を維持（この部分を追加） */
+.task-row.parent-task {
+    background-color: #f0f4f8 !important;
+}
             
             .task-content {
                 padding-left: 15px;
@@ -969,17 +976,17 @@
             }
             
             .task-row.parent-task {
-                padding-left: 10px !important;
-            }
-            
-            .task-row.child-task {
-                padding-left: 25px !important;
-            }
-            
-            .task-row.grandchild-task {
-                padding-left: 40px !important;
-                font-size: 11px;
-            }
+    padding-left: 10px !important;
+}
+
+.task-row.child-task {
+    padding-left: 35px !important; /* 25px → 35px に変更 */
+}
+
+.task-row.grandchild-task {
+    padding-left: 60px !important; /* 40px → 60px に変更 */
+    font-size: 11px;
+}
             
             /* カンバンのスマホ対応 */
             .kanban-board {
@@ -1143,11 +1150,15 @@
     
     /* タスクコンテンツの左パディング調整 */
     .task-row.parent-task .task-content {
-        padding-left: 35px !important;
+        padding-left: 20px !important; /* 15px → 20px に変更、!important追加 */
     }
     
     .task-row.child-task .task-content {
-        padding-left: 35px !important;
+        padding-left: 20px !important; /* この行を追加 */
+    }
+    
+    .task-row.grandchild-task .task-content {
+        padding-left: 5px !important; /* この行を追加 */
     }
 }
         
@@ -1175,27 +1186,39 @@
         }
         
         /* === 追加機能のスタイル === */
-        /* 13行目以降の背景を白に */
-        .task-list .task-row:nth-child(n+13) {
-            background-color: white !important;
-        }
-        
-        .task-list .task-row.child-task,
-        .task-list .task-row.grandchild-task {
-            background-color: white !important;
-        }
-        
-        .task-list .task-row:nth-child(n+13):hover {
-            background-color: #e3f2fd !important;
-        }
-        
-        /* タスクリストを最前面に固定 */
-        .task-list {
-            background-color: white !important;
-            z-index: 25 !important;
-            position: sticky !important;
-            left: 0 !important;
-        }
+        /* === 追加機能のスタイル === */
+/* タスクリストを最前面に固定（背景も確実に白に） */
+.task-list {
+    background-color: white !important;
+    z-index: 25 !important;
+    position: sticky !important;
+    left: 0 !important;
+}
+
+/* 全てのタスク行の背景を設定 */
+.task-list .task-row {
+    background-color: white !important;
+    position: relative;
+    z-index: 25;
+}
+
+/* 親タスクの背景色 */
+.task-list .task-row.parent-task {
+    background-color: #f0f4f8 !important;
+}
+
+/* ホバー時の背景色 */
+.task-list .task-row:hover {
+    background-color: #e3f2fd !important;
+}
+
+/* タスクリストヘッダーも確実に不透明に */
+.task-list-header {
+    background-color: #f8f9fa !important;
+    z-index: 30 !important;
+    position: sticky !important;
+    left: 0 !important;
+}
         
         .task-list-header {
             z-index: 30 !important;
