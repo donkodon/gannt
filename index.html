@@ -1038,10 +1038,41 @@
                 right: 5px;
             }
             
-            /* リサイズハンドルを非表示（スマホでは不要） */
-            .resize-handle {
-                display: none;
-            }
+            /* リサイズハンドルのスマホ対応 */
+.resize-handle {
+    display: block !important;
+    width: 10px;
+    right: -5px;
+}
+
+/* タスクリストの最小・最大幅を調整 */
+.task-list-header,
+.task-list {
+    min-width: 280px !important;
+    max-width: 350px !important;
+}
+
+/* 進捗率の位置を固定 */
+.task-progress {
+    position: absolute !important;
+    right: 35px !important;
+}
+
+/* プラスボタンの位置を固定 */
+.add-child-btn {
+    position: absolute !important;
+    right: 5px !important;
+}
+
+/* タスク名部分の調整 */
+.task-content {
+    position: relative;
+    padding-right: 70px !important;
+}
+
+.task-row.grandchild-task .task-content {
+    padding-right: 50px !important;
+}
         }
         
         /* 横画面対応 */
@@ -1057,23 +1088,34 @@
         }
         
         /* タッチデバイス用の調整 */
-        @media (hover: none) and (pointer: coarse) {
-            .task-row:hover {
-                background-color: white;
-            }
-            
-            .task-row:active {
-                background-color: #e3f2fd;
-            }
-            
-            .collapse-btn:hover {
-                background-color: transparent;
-            }
-            
-            .collapse-btn:active {
-                background-color: #e9ecef;
-            }
-        }
+@media (hover: none) and (pointer: coarse) {
+    .task-row:hover {
+        background-color: white;
+    }
+    
+    .task-row:active {
+        background-color: #e3f2fd;
+    }
+    
+    .collapse-btn:hover {
+        background-color: transparent;
+    }
+    
+    .collapse-btn:active {
+        background-color: #e9ecef;
+    }
+    
+    /* リサイズハンドルのタッチ対応 */
+    .resize-handle {
+        width: 12px;
+        right: -6px;
+    }
+    
+    .resize-handle:active {
+        background-color: #007bff;
+        opacity: 0.8;
+    }
+}
         
         /* 横スクロールのヒント表示 */
         .gantt-body::after {
@@ -1420,16 +1462,14 @@
             }
             
             // 追加機能の実行
-            setTimeout(() => {
-                scrollToTodayWithRedLine();
-                fixBackgroundColors();
-                optimizePerformance();
-                
-                // スマホでなければリサイズ機能を有効化
-                if (window.innerWidth > 768) {
-                    enableResize();
-                }
-            }, 100);
+setTimeout(() => {
+    scrollToTodayWithRedLine();
+    fixBackgroundColors();
+    optimizePerformance();
+    
+    // リサイズ機能を有効化（スマホ条件を削除）
+    enableResize();
+}, 100);
         }
         
         // 今日の位置にスクロールして赤い線を追加
@@ -1540,85 +1580,98 @@
         }
         
         // リサイズ機能を有効化
-        function enableResize() {
-            const taskList = document.querySelector('.task-list');
-            const taskListHeader = document.querySelector('.task-list-header');
+function enableResize() {
+    const taskList = document.querySelector('.task-list');
+    const taskListHeader = document.querySelector('.task-list-header');
+    
+    if (!taskList || !taskListHeader) return;
+    
+    // 既存のハンドルを削除
+    const existingHandle = taskListHeader.querySelector('.resize-handle');
+    if (existingHandle) {
+        existingHandle.remove();
+    }
+    
+    // リサイズハンドルを作成
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'resize-handle';
+    taskListHeader.appendChild(resizeHandle);
+    
+    // オーバーレイを作成
+    let overlay = document.querySelector('.resize-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'resize-overlay';
+        document.body.appendChild(overlay);
+    }
+    
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+    
+    // より厳密な最小幅の設定（進捗率とプラスボタンが崩れない幅）
+    const minWidth = window.innerWidth <= 768 ? 280 : 380;
+    const maxWidth = window.innerWidth <= 768 ? 350 : 600;
+    
+    // タッチイベントの処理
+    function handleStart(e) {
+        isResizing = true;
+        startX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+        startWidth = taskList.offsetWidth;
+        
+        resizeHandle.classList.add('active');
+        overlay.classList.add('active');
+        document.body.classList.add('resizing');
+        
+        e.preventDefault();
+    }
+    
+    function handleMove(e) {
+        if (!isResizing) return;
+        
+        const currentX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+        const diff = currentX - startX;
+        const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + diff));
+        
+        taskList.style.width = newWidth + 'px';
+        taskList.style.minWidth = newWidth + 'px';
+        taskListHeader.style.width = newWidth + 'px';
+        taskListHeader.style.minWidth = newWidth + 'px';
+    }
+    
+    function handleEnd() {
+        if (isResizing) {
+            isResizing = false;
+            resizeHandle.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('resizing');
             
-            if (!taskList || !taskListHeader) return;
-            
-            // 既存のハンドルを削除
-            const existingHandle = taskListHeader.querySelector('.resize-handle');
-            if (existingHandle) {
-                existingHandle.remove();
-            }
-            
-            // リサイズハンドルを作成
-            const resizeHandle = document.createElement('div');
-            resizeHandle.className = 'resize-handle';
-            taskListHeader.appendChild(resizeHandle);
-            
-            // オーバーレイを作成
-            let overlay = document.querySelector('.resize-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'resize-overlay';
-                document.body.appendChild(overlay);
-            }
-            
-            let isResizing = false;
-            let startX = 0;
-            let startWidth = 0;
-            
-            // マウスダウンイベント
-            resizeHandle.addEventListener('mousedown', function(e) {
-                isResizing = true;
-                startX = e.pageX;
-                startWidth = taskList.offsetWidth;
-                
-                resizeHandle.classList.add('active');
-                overlay.classList.add('active');
-                document.body.classList.add('resizing');
-                
-                e.preventDefault();
-            });
-            
-            // マウス移動イベント
-            overlay.addEventListener('mousemove', function(e) {
-                if (!isResizing) return;
-                
-                const diff = e.pageX - startX;
-                const newWidth = Math.max(200, Math.min(600, startWidth + diff));
-                
-                taskList.style.width = newWidth + 'px';
-                taskList.style.minWidth = newWidth + 'px';
-                taskListHeader.style.width = newWidth + 'px';
-                taskListHeader.style.minWidth = newWidth + 'px';
-            });
-            
-            // マウスアップイベント
-            overlay.addEventListener('mouseup', function() {
-                if (isResizing) {
-                    isResizing = false;
-                    resizeHandle.classList.remove('active');
-                    overlay.classList.remove('active');
-                    document.body.classList.remove('resizing');
-                    
-                    // 幅を保存
-                    const currentWidth = taskList.offsetWidth;
-                    localStorage.setItem('taskListWidth', currentWidth);
-                }
-            });
-            
-            // 保存された幅を復元
-            const savedWidth = localStorage.getItem('taskListWidth');
-            if (savedWidth) {
-                const width = parseInt(savedWidth);
-                taskList.style.width = width + 'px';
-                taskList.style.minWidth = width + 'px';
-                taskListHeader.style.width = width + 'px';
-                taskListHeader.style.minWidth = width + 'px';
-            }
+            // 幅を保存
+            const currentWidth = taskList.offsetWidth;
+            localStorage.setItem('taskListWidth', currentWidth);
         }
+    }
+    
+    // マウスイベント
+    resizeHandle.addEventListener('mousedown', handleStart);
+    overlay.addEventListener('mousemove', handleMove);
+    overlay.addEventListener('mouseup', handleEnd);
+    
+    // タッチイベント
+    resizeHandle.addEventListener('touchstart', handleStart, { passive: false });
+    overlay.addEventListener('touchmove', handleMove, { passive: false });
+    overlay.addEventListener('touchend', handleEnd);
+    
+    // 保存された幅を復元（最小・最大幅の範囲内で）
+    const savedWidth = localStorage.getItem('taskListWidth');
+    if (savedWidth) {
+        const width = Math.max(minWidth, Math.min(maxWidth, parseInt(savedWidth)));
+        taskList.style.width = width + 'px';
+        taskList.style.minWidth = width + 'px';
+        taskListHeader.style.width = width + 'px';
+        taskListHeader.style.minWidth = width + 'px';
+    }
+}
         
         // Firebase接続状態の監視
         function setupConnectionMonitoring() {
