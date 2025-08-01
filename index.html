@@ -2468,20 +2468,21 @@
         // モーダル関連
         function openAddTaskModal(isChildTask = false) {
             editingTaskId = null;
-            document.getElementById('modalTitle').textContent = isChildTask && parentTaskForChild ? 
-                `${parentTaskForChild.name} の子タスクを追加` : 'タスクを追加';
-            document.getElementById('taskForm').reset();
             
-            // 子タスク追加の場合は親タスクの情報を引き継ぐ
             if (isChildTask && parentTaskForChild) {
+                document.getElementById('modalTitle').textContent = `${parentTaskForChild.name} の子タスクを追加`;
+                document.getElementById('taskForm').reset();
                 document.getElementById('taskAssignee').value = parentTaskForChild.assignee || '';
                 document.getElementById('taskStart').value = parentTaskForChild.start;
                 document.getElementById('taskEnd').value = parentTaskForChild.end;
                 document.getElementById('parentTask').value = parentTaskForChild.id;
                 document.getElementById('parentTaskGroup').style.display = 'none';
             } else {
+                document.getElementById('modalTitle').textContent = 'タスクを追加';
+                document.getElementById('taskForm').reset();
                 document.getElementById('parentTaskGroup').style.display = 'block';
                 updateParentTaskOptions();
+                parentTaskForChild = null;
             }
             
             document.getElementById('taskModal').style.display = 'block';
@@ -2596,20 +2597,26 @@
         document.getElementById('taskForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            let parentId = null;
+            
+            // parentTaskForChildが設定されている場合（プラスボタンから追加）
+            if (parentTaskForChild) {
+                parentId = parentTaskForChild.id;
+            } else {
+                // 通常のタスク追加（親タスクセレクトから取得）
+                const parentTaskValue = document.getElementById('parentTask').value;
+                parentId = parentTaskValue ? parseInt(parentTaskValue) : null;
+            }
+            
             const taskData = {
                 name: document.getElementById('taskName').value,
                 assignee: document.getElementById('taskAssignee').value,
                 start: document.getElementById('taskStart').value,
                 end: document.getElementById('taskEnd').value,
                 status: document.getElementById('taskStatus').value,
-                parentId: document.getElementById('parentTask').value ? parseInt(document.getElementById('parentTask').value) : null,
+                parentId: parentId,
                 memo: document.getElementById('taskMemo').value || ''
             };
-            
-            // 子タスク追加時の親タスク設定
-            if (parentTaskForChild && !document.getElementById('parentTaskGroup').style.display.includes('none')) {
-                taskData.parentId = parentTaskForChild.id;
-            }
             
             if (editingTaskId) {
                 const task = tasks.find(t => t.id === editingTaskId);
