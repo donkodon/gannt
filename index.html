@@ -299,10 +299,38 @@
             font-weight: 600;
             color: #28a745;
             position: sticky !important;
-            right: 15px !important;
+            right: 40px !important;
             background-color: inherit !important;
             padding: 0 5px !important;
             z-index: 10 !important;
+        }
+        
+        /* 子タスク追加ボタン */
+        .add-child-btn {
+            position: sticky !important;
+            right: 10px !important;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            z-index: 15 !important;
+            margin-left: 5px;
+        }
+        
+        .add-child-btn:hover {
+            background-color: #218838;
+            transform: scale(1.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .task-row:hover .task-progress {
@@ -315,6 +343,27 @@
         
         .task-row.parent-task:hover .task-progress {
             background-color: #e3f2fd !important;
+        }
+        
+        .task-row:hover .add-child-btn {
+            background-color: #218838;
+        }
+        
+        .task-row.parent-task .add-child-btn {
+            background-color: #007bff;
+        }
+        
+        .task-row.parent-task .add-child-btn:hover {
+            background-color: #0056b3;
+        }
+        
+        /* 孫タスクの場合はプラスボタンを非表示 */
+        .task-row.grandchild-task .add-child-btn {
+            display: none;
+        }
+        
+        .task-row.grandchild-task .task-progress {
+            right: 15px !important;
         }
         
         .timeline-container {
@@ -861,7 +910,19 @@
                 font-size: 11px;
                 min-width: 35px;
                 width: 40px;
+                right: 35px !important;
+            }
+            
+            /* 子タスク追加ボタンのスマホ対応 */
+            .add-child-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 14px;
                 right: 5px !important;
+            }
+            
+            .task-row.grandchild-task .task-progress {
+                right: 10px !important;
             }
             
             /* タイムライン行の高さ調整 */
@@ -1188,7 +1249,7 @@
                     <label for="taskEnd">終了日</label>
                     <input type="date" id="taskEnd" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="parentTaskGroup">
                     <label for="parentTask">親タスク</label>
                     <select id="parentTask">
                         <option value="">なし（親タスク）</option>
@@ -1253,6 +1314,7 @@
         let draggedElement = null;
         let draggedTaskId = null;
         let isUpdatingFromFirebase = false;
+        let parentTaskForChild = null; // 子タスク追加時の親タスク情報
         
         // デフォルトのタスクデータ
         const defaultTasks = [
@@ -1916,6 +1978,16 @@
             return flatList;
         }
         
+        // 子タスク追加ボタンのクリックハンドラ
+        function addChildTask(parentId, event) {
+            event.stopPropagation();
+            const parent = tasks.find(t => t.id === parentId);
+            if (parent) {
+                parentTaskForChild = parent;
+                openAddTaskModal(true);
+            }
+        }
+        
         // ガントチャートの描画
         function renderGanttChart() {
             try {
@@ -2053,6 +2125,17 @@
                         ${deadlineHTML}
                         <div class="task-progress">${progress}%</div>
                     `;
+                    
+                    // 子タスク追加ボタン（孫タスクでない場合のみ）
+                    if (task.level < 2) {
+                        const addChildBtn = document.createElement('button');
+                        addChildBtn.className = 'add-child-btn';
+                        addChildBtn.innerHTML = '+';
+                        addChildBtn.title = '子タスクを追加';
+                        addChildBtn.onclick = (e) => addChildTask(task.id, e);
+                        taskContent.appendChild(addChildBtn);
+                    }
+                    
                     taskRow.appendChild(taskContent);
                     
                     taskRow.addEventListener('dragstart', handleDragStart);
@@ -2383,17 +2466,31 @@
         }
         
         // モーダル関連
-        function openAddTaskModal() {
+        function openAddTaskModal(isChildTask = false) {
             editingTaskId = null;
-            document.getElementById('modalTitle').textContent = 'タスクを追加';
+            document.getElementById('modalTitle').textContent = isChildTask && parentTaskForChild ? 
+                `${parentTaskForChild.name} の子タスクを追加` : 'タスクを追加';
             document.getElementById('taskForm').reset();
-            updateParentTaskOptions();
+            
+            // 子タスク追加の場合は親タスクの情報を引き継ぐ
+            if (isChildTask && parentTaskForChild) {
+                document.getElementById('taskAssignee').value = parentTaskForChild.assignee || '';
+                document.getElementById('taskStart').value = parentTaskForChild.start;
+                document.getElementById('taskEnd').value = parentTaskForChild.end;
+                document.getElementById('parentTask').value = parentTaskForChild.id;
+                document.getElementById('parentTaskGroup').style.display = 'none';
+            } else {
+                document.getElementById('parentTaskGroup').style.display = 'block';
+                updateParentTaskOptions();
+            }
+            
             document.getElementById('taskModal').style.display = 'block';
             document.querySelector('.delete-task-btn').style.display = 'none';
         }
         
         function openEditTaskModal(taskId) {
             editingTaskId = taskId;
+            parentTaskForChild = null;
             const task = tasks.find(t => t.id === taskId);
             
             if (task) {
@@ -2404,6 +2501,7 @@
                 document.getElementById('taskEnd').value = task.end;
                 document.getElementById('taskStatus').value = task.status;
                 document.getElementById('taskMemo').value = task.memo || '';
+                document.getElementById('parentTaskGroup').style.display = 'block';
                 updateParentTaskOptions(task.parentId);
                 document.getElementById('taskModal').style.display = 'block';
                 document.querySelector('.delete-task-btn').style.display = 'inline-block';
@@ -2427,6 +2525,7 @@
         
         function closeModal() {
             document.getElementById('taskModal').style.display = 'none';
+            parentTaskForChild = null;
         }
 
         // タスクを削除
@@ -2507,6 +2606,11 @@
                 memo: document.getElementById('taskMemo').value || ''
             };
             
+            // 子タスク追加時の親タスク設定
+            if (parentTaskForChild && !document.getElementById('parentTaskGroup').style.display.includes('none')) {
+                taskData.parentId = parentTaskForChild.id;
+            }
+            
             if (editingTaskId) {
                 const task = tasks.find(t => t.id === editingTaskId);
                 if (task) {
@@ -2535,6 +2639,7 @@
             }
             
             closeModal();
+            parentTaskForChild = null;
             normalizeParentIds();
             saveTasksToStorage();
             renderGanttChart();
