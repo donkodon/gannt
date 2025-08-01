@@ -865,14 +865,14 @@
                 margin: 0 -10px;
             }
             
-            /* タスクリストの幅を狭く */
-            .task-list-header,
-            .task-list {
-                min-width: 200px !important;
-                width: 200px !important;
-                font-size: 12px;
-                padding: 10px;
-            }
+            /* タスクリストの幅を広げる */
+.task-list-header,
+.task-list {
+    min-width: 250px !important;
+    width: 250px !important;
+    font-size: 12px;
+    padding: 10px;
+}
             
             .task-list-header {
                 padding: 10px;
@@ -2118,6 +2118,20 @@
 
                     // スマホでは担当者を非表示
                     const assigneeHTML = window.innerWidth <= 768 ? '' : `<div class="task-assignee">${task.assignee || '未割当'}</div>`;
+
+function renderGanttChart() {
+    try {
+        const taskList = document.getElementById('taskList');
+        const timeline = document.getElementById('timeline');
+        const timelineHeader = document.getElementById('timelineHeader');
+        
+        // スマホの場合、ヘッダーテキストを変更（この部分を追加）
+        if (window.innerWidth <= 768) {
+            const taskListHeader = document.querySelector('.task-list-header');
+            if (taskListHeader) {
+                taskListHeader.textContent = 'タスク名 / 期限 / 進捗率';
+            }
+        }
 
                     taskContent.innerHTML = `
                         <div class="task-name">${task.name}</div>
