@@ -90,20 +90,65 @@
         
         .gantt-header {
             display: flex;
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* ヘッダー全体にグラデーション */
+            border-bottom: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* 美しいシャドウ */
+            position: relative;
+        }
+        
+        .gantt-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
         }
         
         .task-list-header {
             min-width: 400px;
             width: 400px;
-            padding: 15px;
-            font-weight: bold;
+            padding: 0;
+            font-weight: 600;
             border-right: 2px solid #dee2e6;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* グラデーション背景 */
+            color: white;
             position: sticky;
             left: 0;
             z-index: 30;
+            display: flex;
+            align-items: center;
+            border-bottom: none;
+            position: relative;
+            height: 55px; /* 高さを少し増やす */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* 美しいシャドウを追加 */
+        }
+        
+        .task-list-header span {
+            border-right: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: clip;
+            transition: all 0.3s ease;
+        }
+        
+        .task-list-header span:last-child {
+            border-right: none;
+        }
+        
+        .task-list-header span:hover {
+            background-color: rgba(255,255,255,0.1); /* ホバー時の美しいエフェクト */
+            transform: translateY(-1px); /* 微細な浮き上がり効果 */
         }
         
         .timeline-header-wrapper {
@@ -120,8 +165,8 @@
         }
         
         .task-list {
-            min-width: 400px;
-            width: 400px;
+            min-width: 480px;
+            width: 480px;
             border-right: 2px solid #dee2e6;
             background-color: white;
             position: sticky;
@@ -132,7 +177,7 @@
         .task-row {
             display: flex;
             align-items: center;
-            padding: 10px 15px;
+            padding: 0;
             border-bottom: 1px solid #e9ecef;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -144,8 +189,166 @@
             z-index: 25;
         }
         
+        .task-cell {
+            border-right: 1px solid #e9ecef;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .task-cell:last-child {
+            border-right: none;
+        }
+        
+        :root {
+            --task-name-cell-width: 150px;
+        }
+        
+        .task-cell.task-name-cell {
+            width: var(--task-name-cell-width);
+            min-width: var(--task-name-cell-width);
+            max-width: var(--task-name-cell-width);
+            justify-content: flex-start;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .task-cell.assignee-cell {
+            width: 70px;
+            min-width: 70px;
+            max-width: 70px;
+            justify-content: center;
+        }
+        
+        .task-cell.status-cell {
+            width: 70px;
+            min-width: 70px;
+            max-width: 70px;
+            justify-content: center;
+            padding: 4px;
+        }
+        
+        .task-cell.start-date-cell {
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .task-cell.start-date-cell:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .task-cell.deadline-cell {
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .task-cell.deadline-cell:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* 隠しカレンダー入力フィールド */
+        .hidden-date-input {
+            position: fixed;
+            top: -1000px;
+            left: -1000px;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            z-index: -1;
+        }
+        
+        .task-cell.progress-cell {
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            justify-content: center;
+            font-weight: 600;
+            color: #28a745;
+            font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace; /* 等幅フォントで数値を統一 */
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .task-cell.action-cell {
+            width: 30px;
+            min-width: 30px;
+            max-width: 30px;
+            justify-content: center;
+            padding: 4px;
+        }
+        
+        /* セル内の要素スタイル */
+        .task-assignee {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .task-assignee:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6b5b95 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            cursor: pointer;
+        }
+        
+        /* インライン編集用スタイル */
+        .task-name-cell > div:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 6px;
+            padding: 4px 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .task-status-select {
+            width: 100%;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 11px;
+            padding: 4px 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
         .task-row:hover {
-            background-color: #e3f2fd;
+            background-color: #f8f9ff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        }
+        
+        .task-row.completed:hover {
+            background-color: #c4c8cc !important;
         }
         
         .task-row.dragging {
@@ -162,13 +365,65 @@
             background-color: #f0f4f8;
         }
         
+        .task-row.parent-task.completed {
+            background-color: #d1d5db !important;
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        .task-row.completed {
+            background-color: #d1d5db !important;
+            opacity: 0.9;
+            color: #374151;
+        }
+        
+        .task-row.completed.parent-task {
+            background-color: #d1d5db !important;
+            color: #374151;
+            font-weight: bold;
+        }
+        
+        .task-row.completed.child-task {
+            background-color: #d1d5db !important;
+            color: #374151;
+        }
+        
+        .task-row.completed.grandchild-task {
+            background-color: #d1d5db !important;
+            color: #374151;
+        }
+        
+        .task-row.completed .task-cell {
+            color: #374151;
+            background-color: transparent;
+        }
+        
+        .task-row.completed .task-name-cell {
+            text-decoration: line-through;
+        }
+        
+        .task-row.completed .task-status-select {
+            opacity: 0.9;
+            background-color: #c6c6c6;
+            color: #374151;
+        }
+        
+        .task-row.completed .add-child-btn {
+            opacity: 0.8;
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%) !important;
+            color: #374151 !important;
+        }
+        
+        .task-row.completed .task-assignee {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%) !important;
+            color: #374151 !important;
+        }
+        
         .task-row.child-task {
-            padding-left: 40px;
             background-color: white;
         }
         
         .task-row.grandchild-task {
-            padding-left: 70px;
             font-size: 14px;
             background-color: white;
         }
@@ -177,64 +432,58 @@
             display: none;
         }
         
-        /* 折りたたみボタン */
-.collapse-btn {
-    position: absolute;
-    left: 5px;
-    width: 20px;
-    height: 20px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 12px;
-    color: #666;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease;
-}
-
-.collapse-btn:hover {
-    background-color: #e9ecef;
-    border-radius: 3px;
-}
-
-.collapse-btn.collapsed {
-    transform: rotate(-90deg);
-}
-
-/* 折りたたみボタンの位置調整 */
-.task-row.parent-task {
-    padding-left: 15px !important;
-}
-
-.task-row.parent-task .collapse-btn {
-    left: 5px !important;
-}
-
-.task-row.parent-task .task-content {
-    padding-left: 25px !important;
-}
-
-.task-row.child-task {
-    padding-left: 40px !important;
-}
-
-.task-row.child-task .collapse-btn {
-    left: 30px !important;
-}
-
-.task-row.child-task .task-content {
-    padding-left: 25px !important;
-}
-
-.task-row.grandchild-task {
-    padding-left: 70px !important;
-}
-
-.task-row.grandchild-task .task-content {
-    padding-left: 0 !important;
-}
+        /* 折りたたみボタンの調整 */
+        .collapse-btn {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .collapse-btn:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6b5b95 100%);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .collapse-btn.collapsed {
+            transform: translateY(-50%) rotate(-90deg);
+        }
+        
+        /* 階層表示の調整 */
+        .task-cell.task-name-cell {
+            position: relative;
+        }
+        
+        /* 親タスクは折りたたみボタン分の余裕を確保 */
+        .task-row.parent-task .task-name-cell {
+            padding-left: 30px;
+        }
+        
+        /* 子タスクは更にインデント */
+        .task-row.child-task .task-name-cell {
+            padding-left: 50px;
+        }
+        
+        /* 孫タスクは更にインデント */
+        .task-row.grandchild-task .task-name-cell {
+            padding-left: 70px;
+        }
 
 /* ドラッグ&ドロップの視覚的フィードバック */
 .task-row.drag-over-top {
@@ -245,121 +494,55 @@
     border-bottom: 3px solid #007bff !important;
 }
 
-.task-content {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    padding-left: 25px;
-    width: 100%;
-    min-width: 0;
-}
 
-.task-row.child-task .task-content {
-    padding-left: 0;
-}
+        
 
-.task-row.grandchild-task .task-content {
-    padding-left: 0;
-}
         
-        .task-name {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin-right: 10px;
+        .task-status-select:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.15);
+            transform: translateY(-1px);
         }
         
-        .task-assignee {
-            flex-shrink: 0;
-            margin-right: 10px;
-            padding: 4px 10px;
-            background-color: #e9ecef;
-            border-radius: 15px;
-            font-size: 12px;
-            white-space: nowrap;
+        .task-status-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
         
-        .task-deadline {
-            flex-shrink: 0;
-            margin-right: 10px;
-        }
-        
-        .task-progress {
-            flex-shrink: 0;
-            min-width: 45px;
-            width: 60px;
-            text-align: right;
-            font-size: 13px;
-            font-weight: 600;
-            color: #28a745;
-            position: sticky !important;
-            right: 40px !important;
-            background-color: inherit !important;
-            padding: 0 5px !important;
-            z-index: 10 !important;
-        }
-        
-        /* 子タスク追加ボタン */
+        /* 子タスク追加ボタンのスタイル調整 */
         .add-child-btn {
-            position: sticky !important;
-            right: 10px !important;
-            width: 24px;
-            height: 24px;
+            position: relative;
+            margin: 0 4px;
+            width: 22px;
+            height: 22px;
             border: none;
-            background-color: #28a745;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            z-index: 15;
             flex-shrink: 0;
-            z-index: 15 !important;
-            margin-left: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .add-child-btn:hover {
-            background-color: #218838;
-            transform: scale(1.1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .task-row:hover .task-progress {
-            background-color: #e3f2fd !important;
-        }
-        
-        .task-row.parent-task .task-progress {
-            background-color: #f0f4f8 !important;
-        }
-        
-        .task-row.parent-task:hover .task-progress {
-            background-color: #e3f2fd !important;
-        }
-        
-        .task-row:hover .add-child-btn {
-            background-color: #218838;
+            background: linear-gradient(135deg, #218838 0%, #1ea88a 100%);
+            transform: scale(1.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
         .task-row.parent-task .add-child-btn {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
         }
         
         .task-row.parent-task .add-child-btn:hover {
-            background-color: #0056b3;
-        }
-        
-        /* 孫タスクの場合はプラスボタンを非表示 */
-        .task-row.grandchild-task .add-child-btn {
-            display: none;
-        }
-        
-        .task-row.grandchild-task .task-progress {
-            right: 15px !important;
+            background: linear-gradient(135deg, #0056b3 0%, #520dc2 100%);
         }
         
         .timeline-container {
@@ -371,22 +554,37 @@
         
         .timeline-header {
             display: flex;
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            height: 49px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* タスクリストヘッダーと統一 */
+            border-bottom: none;
+            height: 55px; /* タスクリストヘッダーと同じ高さ */
             position: sticky;
             top: 0;
             z-index: 5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
         
         .month-header {
-            border-right: 1px solid #dee2e6;
+            border-right: 1px solid rgba(255,255,255,0.2);
             text-align: center;
-            font-weight: bold;
-            padding: 15px 5px;
-            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: 12px 5px;
+            background: transparent;
+            color: white;
             white-space: nowrap;
             flex-shrink: 0;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 55px;
+        }
+        
+        .month-header:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
         }
         
         .timeline {
@@ -409,6 +607,37 @@
             opacity: 0.5;
         }
         
+        .timeline-row.completed {
+            opacity: 0.9;
+            background-color: #d1d5db !important;
+        }
+        
+        .timeline-row.completed .task-bar {
+            opacity: 0.9;
+            background-color: #6b7280;
+        }
+        
+        .timeline-row.completed .task-bar.child-bar {
+            background-color: #7a7a7a;
+        }
+        
+        .timeline-row.completed .task-bar.grandchild-bar {
+            background-color: #8a8a8a;
+        }
+        
+        .timeline-row.completed .timeline-grid {
+            background-color: #d1d5db;
+        }
+        
+        .timeline-row.completed .grid-cell {
+            background-color: transparent;
+            border-right-color: #b5b5b5;
+        }
+        
+        .timeline-row.completed .grid-cell.weekend {
+            background-color: #d1d5db;
+        }
+        
         .timeline-grid {
             position: absolute;
             top: 0;
@@ -428,7 +657,7 @@
         }
         
         .grid-cell.weekend {
-            background-color: #fafafa;
+            background-color: #f5f5f5;
         }
         
         .task-bar {
@@ -483,6 +712,9 @@
         .task-bar .progress-text {
             position: relative;
             z-index: 1;
+            font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace; /* タスクバー内でも等幅フォント */
+            font-size: 12px;
+            font-weight: 600;
         }
         
         /* カンバンスタイル */
@@ -537,6 +769,27 @@
         .kanban-card.dragging {
             opacity: 0.5;
             transform: rotate(3deg);
+        }
+        
+        .kanban-card.completed {
+            opacity: 0.9;
+            background-color: #d1d5db !important;
+            color: #374151;
+            border-left: 4px solid #6b7280;
+        }
+        
+        .kanban-card.completed .kanban-card-title {
+            color: #374151;
+            text-decoration: line-through;
+        }
+        
+        .kanban-card.completed .kanban-card-deadline {
+            color: #6b7280;
+        }
+        
+        .kanban-card.completed .kanban-card-assignee {
+            background-color: #b5b5b5;
+            color: #374151;
         }
         
         .kanban-card-title {
@@ -861,72 +1114,134 @@
                 margin: 0 -10px;
             }
             
-            /* タスクリストの幅を広げる */
-.task-list-header,
-.task-list {
-    min-width: 250px !important;
-    width: 250px !important;
-    font-size: 12px;
-    padding: 10px;
-    background-color: white !important; /* この行を追加 */
-}
+            /* スマホ対応のセル調整 */
+            .task-list-header,
+            .task-list {
+                min-width: 380px !important;
+                width: 380px !important;
+                font-size: 12px;
+                padding: 0;
+                background-color: white !important;
+            }
             
             .task-list-header {
-                padding: 10px;
+                padding: 0;
                 font-size: 12px;
+                height: 45px; /* スマホ版の高さを調整 */
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
             }
             
-            /* タスク行の調整 */
-.task-row {
-    padding: 8px;
-    height: 40px;
-    min-height: 40px;
-    max-height: 40px;
-    background-color: white !important; /* この行を追加 */
-}
-
-/* 親タスクの背景色を維持（この部分を追加） */
-.task-row.parent-task {
-    background-color: #f0f4f8 !important;
-}
-            
-            .task-content {
-                padding-left: 15px;
+            .task-list-header span {
+                font-size: 12px;
+                letter-spacing: 0.2px;
+                border-right: 1px solid rgba(255,255,255,0.2);
+                padding: 8px 2px;
+                overflow: visible;
+                text-overflow: clip;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
             }
             
-            .task-name {
-                font-size: 12px;
-                margin-right: 5px;
+            .task-row {
+                padding: 0;
+                height: 40px;
+                min-height: 40px;
+                max-height: 40px;
+                background-color: white !important;
+            }
+            
+            .task-row.parent-task {
+                background-color: #f0f4f8 !important;
+            }
+            
+            .task-row.completed {
+                background-color: #d1d5db !important;
+                opacity: 0.9;
+                color: #374151;
+            }
+            
+            .task-row.completed.parent-task {
+                background-color: #d1d5db !important;
+                color: #374151;
+                font-weight: bold;
+            }
+            
+            .task-row.completed.child-task {
+                background-color: #d1d5db !important;
+                color: #374151;
+            }
+            
+            .task-row.completed.grandchild-task {
+                background-color: #d1d5db !important;
+                color: #374151;
+            }
+            
+            /* スマホ版セルサイズ調整 */
+            .task-cell.task-name-cell {
+                width: calc(var(--task-name-cell-width) - 10px);
+                min-width: calc(var(--task-name-cell-width) - 10px);
+                max-width: calc(var(--task-name-cell-width) - 10px);
+                font-size: 11px;
+            }
+            
+            .task-cell.status-cell {
+                width: 60px;
+                min-width: 60px;
+                max-width: 60px;
+            }
+            
+            .task-cell.start-date-cell {
+                width: 45px;
+                min-width: 45px;
+                max-width: 45px;
+                font-size: 10px;
+                cursor: pointer;
+            }
+            
+            .task-cell.deadline-cell {
+                width: 45px;
+                min-width: 45px;
+                max-width: 45px;
+                font-size: 10px;
+                cursor: pointer;
+            }
+            
+            .task-cell.progress-cell {
+                width: 50px;
+                min-width: 50px;
+                max-width: 50px;
+                font-size: 11px;
+                font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace; /* スマホ版でも等幅フォント */
+                text-align: center;
+                font-weight: 600;
+            }
+            
+            .task-cell.action-cell {
+                width: 25px;
+                min-width: 25px;
+                max-width: 25px;
+            }
+            
+            .task-status-select {
+                font-size: 10px;
+                padding: 1px 3px;
             }
             
             .task-assignee {
-                display: none; /* スマホでは非表示 */
+                font-size: 10px;
+                padding: 2px 6px;
             }
             
-            .task-deadline {
-                padding: 2px 6px !important;
-                font-size: 10px !important;
-                margin-right: 5px !important;
-            }
+            /* 古いスタイルを削除 - セル構造に統一 */
             
-            .task-progress {
-                font-size: 11px;
-                min-width: 35px;
-                width: 40px;
-                right: 35px !important;
-            }
+
             
-            /* 子タスク追加ボタンのスマホ対応 */
-            .add-child-btn {
-                width: 20px;
-                height: 20px;
-                font-size: 14px;
-                right: 5px !important;
-            }
+            /* 孫タスクの調整はセル構造で統一済み */
             
-            .task-row.grandchild-task .task-progress {
-                right: 10px !important;
-            }
+            /* ステータスプルダウンのスマホ対応はセル内で調整済み */
             
             /* タイムライン行の高さ調整 */
             .timeline-row {
@@ -940,6 +1255,12 @@
                 height: 24px;
                 font-size: 10px;
                 padding: 0 5px;
+                font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace; /* スマホ版タスクバーでも等幅フォント */
+            }
+            
+            .task-bar .progress-text {
+                font-size: 10px;
+                font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace;
             }
             
             .task-bar.child-bar {
@@ -956,10 +1277,21 @@
                 min-width: 20px;
             }
             
-            /* 月ヘッダーの調整 */
             .month-header {
-                font-size: 11px;
-                padding: 10px 2px;
+                font-size: 12px;
+                padding: 8px 2px;
+                color: white;
+                background: transparent;
+                border-right: 1px solid rgba(255,255,255,0.2);
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .timeline-header {
+                height: 45px; /* スマホ版の高さを調整 */
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             }
             
             /* ガントボディの高さ調整 */
@@ -975,18 +1307,18 @@
                 font-size: 10px;
             }
             
-            .task-row.parent-task {
-    padding-left: 10px !important;
-}
-
-.task-row.child-task {
-    padding-left: 35px !important; /* 25px → 35px に変更 */
-}
-
-.task-row.grandchild-task {
-    padding-left: 60px !important; /* 40px → 60px に変更 */
-    font-size: 11px;
-}
+            /* スマホ版の階層表示調整 */
+            .task-row.parent-task .task-name-cell {
+                padding-left: 25px;
+            }
+            
+            .task-row.child-task .task-name-cell {
+                padding-left: 40px;
+            }
+            
+            .task-row.grandchild-task .task-name-cell {
+                padding-left: 55px;
+            }
             
             /* カンバンのスマホ対応 */
             .kanban-board {
@@ -1041,8 +1373,8 @@
                 right: 5px;
             }
             
-            /* リサイズハンドルのスマホ対応 */
-.resize-handle {
+            /* セル間リサイズハンドルのスマホ対応 */
+.cell-resize-handle {
     display: block !important;
     width: 10px;
     right: -5px;
@@ -1051,8 +1383,8 @@
 /* タスクリストの最小・最大幅を調整 */
 .task-list-header,
 .task-list {
-    min-width: 280px !important;
-    max-width: 350px !important;
+    min-width: 320px !important;
+    max-width: 450px !important;
 }
 
 /* 進捗率の位置を固定 */
@@ -1061,21 +1393,7 @@
     right: 35px !important;
 }
 
-/* プラスボタンの位置を固定 */
-.add-child-btn {
-    position: absolute !important;
-    right: 5px !important;
-}
 
-/* タスク名部分の調整 */
-.task-content {
-    position: relative;
-    padding-right: 70px !important;
-}
-
-.task-row.grandchild-task .task-content {
-    padding-right: 50px !important;
-}
         }
         
         /* 横画面対応 */
@@ -1108,13 +1426,13 @@
         background-color: #e9ecef;
     }
     
-    /* リサイズハンドルのタッチ対応 */
-    .resize-handle {
+    /* セル間リサイズハンドルのタッチ対応 */
+    .cell-resize-handle {
         width: 12px;
         right: -6px;
     }
     
-    .resize-handle:active {
+    .cell-resize-handle:active {
         background-color: #007bff;
         opacity: 0.8;
     }
@@ -1194,38 +1512,6 @@
     position: sticky !important;
     left: 0 !important;
 }
-
-/* 全てのタスク行の背景を設定 */
-.task-list .task-row {
-    background-color: white !important;
-    position: relative;
-    z-index: 25;
-}
-
-/* 親タスクの背景色 */
-.task-list .task-row.parent-task {
-    background-color: #f0f4f8 !important;
-}
-
-/* ホバー時の背景色 */
-.task-list .task-row:hover {
-    background-color: #e3f2fd !important;
-}
-
-/* タスクリストヘッダーも確実に不透明に */
-.task-list-header {
-    background-color: #f8f9fa !important;
-    z-index: 30 !important;
-    position: sticky !important;
-    left: 0 !important;
-}
-        
-        .task-list-header {
-            z-index: 30 !important;
-            position: sticky !important;
-            left: 0 !important;
-            position: relative;
-        }
         
         /* 今日の線のスタイル */
         .today-line {
@@ -1238,8 +1524,8 @@
             pointer-events: none;
         }
         
-        /* リサイズハンドル */
-        .resize-handle {
+        /* セル間リサイズハンドル */
+        .cell-resize-handle {
             position: absolute;
             top: 0;
             right: -3px;
@@ -1247,15 +1533,16 @@
             height: 100%;
             cursor: col-resize;
             background-color: transparent;
-            z-index: 100;
+            z-index: 101;
+            transition: background-color 0.2s ease;
         }
         
-        .resize-handle:hover {
+        .cell-resize-handle:hover {
             background-color: #007bff;
-            opacity: 0.5;
+            opacity: 0.6;
         }
         
-        .resize-handle.active {
+        .cell-resize-handle.active {
             background-color: #007bff;
             opacity: 0.8;
         }
@@ -1295,7 +1582,15 @@
         <!-- ガントチャート -->
         <div class="gantt-container" id="ganttView">
             <div class="gantt-header">
-                <div class="task-list-header">タスク名 / 担当者 / 期限 / 進捗率</div>
+                <div class="task-list-header" id="taskListHeader">
+                    <span style="width: 150px; padding-left: 15px; display: inline-block;">タスク</span>
+                    <span style="width: 70px; text-align: center; display: inline-block;">担当</span>
+                    <span style="width: 70px; text-align: center; display: inline-block;">状態</span>
+                    <span style="width: 50px; text-align: center; display: inline-block;">開始</span>
+                    <span style="width: 50px; text-align: center; display: inline-block;">完了</span>
+                    <span style="width: 50px; text-align: center; display: inline-block;">進捗</span>
+                    <span style="width: 30px; text-align: center; display: inline-block;"></span>
+                </div>
                 <div class="timeline-header-wrapper">
                     <div class="timeline-header" id="timelineHeader"></div>
                 </div>
@@ -1413,7 +1708,6 @@
         let draggedElement = null;
         let draggedTaskId = null;
         let isUpdatingFromFirebase = false;
-        let parentTaskForChild = null; // 子タスク追加時の親タスク情報
         
         // デフォルトのタスクデータ
         const defaultTasks = [
@@ -1524,8 +1818,8 @@ setTimeout(() => {
     fixBackgroundColors();
     optimizePerformance();
     
-    // リサイズ機能を有効化（スマホ条件を削除）
-    enableResize();
+    // セル間リサイズ機能を有効化
+    enableCellResize();
 }, 100);
         }
         
@@ -1636,99 +1930,121 @@ setTimeout(() => {
             });
         }
         
-        // リサイズ機能を有効化
-function enableResize() {
-    const taskList = document.querySelector('.task-list');
-    const taskListHeader = document.querySelector('.task-list-header');
+        // セル間リサイズ機能を有効化
+function enableCellResize() {
+    const taskNameCells = document.querySelectorAll('.task-name-cell');
     
-    if (!taskList || !taskListHeader) return;
-    
-    // 既存のハンドルを削除
-    const existingHandle = taskListHeader.querySelector('.resize-handle');
-    if (existingHandle) {
-        existingHandle.remove();
-    }
-    
-    // リサイズハンドルを作成
-    const resizeHandle = document.createElement('div');
-    resizeHandle.className = 'resize-handle';
-    taskListHeader.appendChild(resizeHandle);
-    
-    // オーバーレイを作成
-    let overlay = document.querySelector('.resize-overlay');
-    if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.className = 'resize-overlay';
-        document.body.appendChild(overlay);
-    }
-    
-    let isResizing = false;
-    let startX = 0;
-    let startWidth = 0;
-    
-    // より厳密な最小幅の設定（進捗率とプラスボタンが崩れない幅）
-    const minWidth = window.innerWidth <= 768 ? 280 : 380;
-    const maxWidth = window.innerWidth <= 768 ? 350 : 600;
-    
-    // タッチイベントの処理
-    function handleStart(e) {
-        isResizing = true;
-        startX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
-        startWidth = taskList.offsetWidth;
-        
-        resizeHandle.classList.add('active');
-        overlay.classList.add('active');
-        document.body.classList.add('resizing');
-        
-        e.preventDefault();
-    }
-    
-    function handleMove(e) {
-        if (!isResizing) return;
-        
-        const currentX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
-        const diff = currentX - startX;
-        const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + diff));
-        
-        taskList.style.width = newWidth + 'px';
-        taskList.style.minWidth = newWidth + 'px';
-        taskListHeader.style.width = newWidth + 'px';
-        taskListHeader.style.minWidth = newWidth + 'px';
-    }
-    
-    function handleEnd() {
-        if (isResizing) {
-            isResizing = false;
-            resizeHandle.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.classList.remove('resizing');
-            
-            // 幅を保存
-            const currentWidth = taskList.offsetWidth;
-            localStorage.setItem('taskListWidth', currentWidth);
+    taskNameCells.forEach(cell => {
+        // 既存のハンドルを削除
+        const existingHandle = cell.querySelector('.cell-resize-handle');
+        if (existingHandle) {
+            existingHandle.remove();
         }
-    }
+        
+        // リサイズハンドルを作成
+        const resizeHandle = document.createElement('div');
+        resizeHandle.className = 'cell-resize-handle';
+        cell.appendChild(resizeHandle);
+        
+        // オーバーレイを作成または取得
+        let overlay = document.querySelector('.resize-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'resize-overlay';
+            document.body.appendChild(overlay);
+        }
+        
+        let isResizing = false;
+        let startX = 0;
+        let startWidth = 0;
+        const minWidth = 100;
+        const maxWidth = 300;
+        
+        function handleStart(e) {
+            isResizing = true;
+            startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+            startWidth = cell.offsetWidth;
+            
+            resizeHandle.classList.add('active');
+            overlay.classList.add('active');
+            document.body.classList.add('resizing');
+            
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        function handleMove(e) {
+            if (!isResizing) return;
+            
+            const currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+            const deltaX = currentX - startX;
+            const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + deltaX));
+            
+            // タスク名セルの幅を更新
+            updateTaskNameCellWidth(newWidth);
+            
+            e.preventDefault();
+        }
+        
+        function handleEnd() {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.classList.remove('resizing');
+                
+                // 幅を保存
+                const currentWidth = cell.offsetWidth;
+                localStorage.setItem('taskNameCellWidth', currentWidth);
+            }
+        }
+        
+        // マウスイベント
+        resizeHandle.addEventListener('mousedown', handleStart);
+        overlay.addEventListener('mousemove', handleMove);
+        overlay.addEventListener('mouseup', handleEnd);
+        
+        // タッチイベント
+        resizeHandle.addEventListener('touchstart', handleStart, { passive: false });
+        overlay.addEventListener('touchmove', handleMove, { passive: false });
+        overlay.addEventListener('touchend', handleEnd);
+    });
     
-    // マウスイベント
-    resizeHandle.addEventListener('mousedown', handleStart);
-    overlay.addEventListener('mousemove', handleMove);
-    overlay.addEventListener('mouseup', handleEnd);
-    
-    // タッチイベント
-    resizeHandle.addEventListener('touchstart', handleStart, { passive: false });
-    overlay.addEventListener('touchmove', handleMove, { passive: false });
-    overlay.addEventListener('touchend', handleEnd);
-    
-    // 保存された幅を復元（最小・最大幅の範囲内で）
-    const savedWidth = localStorage.getItem('taskListWidth');
+    // 保存された幅を復元
+    const savedWidth = localStorage.getItem('taskNameCellWidth');
     if (savedWidth) {
-        const width = Math.max(minWidth, Math.min(maxWidth, parseInt(savedWidth)));
-        taskList.style.width = width + 'px';
-        taskList.style.minWidth = width + 'px';
-        taskListHeader.style.width = width + 'px';
-        taskListHeader.style.minWidth = width + 'px';
+        const width = Math.max(100, Math.min(300, parseInt(savedWidth)));
+        updateTaskNameCellWidth(width);
     }
 }
+
+// タスク名セルの幅を更新
+function updateTaskNameCellWidth(newWidth) {
+    // CSS変数を使用して全てのタスク名セルを更新
+    document.documentElement.style.setProperty('--task-name-cell-width', newWidth + 'px');
+    
+    // ヘッダーの幅も更新
+    const headerSpan = document.querySelector('.task-list-header span:first-child');
+    if (headerSpan) {
+        headerSpan.style.width = newWidth + 'px';
+    }
+    
+    // タスクリスト全体の幅を調整（必要に応じて）
+    const taskList = document.querySelector('.task-list');
+    if (taskList) {
+        const otherCellsWidth = 70 + 70 + 50 + 50 + 50 + 30; // 担当者 + ステータス + 開始日 + 完了日 + 進捗率 + アクション
+        const totalWidth = newWidth + otherCellsWidth;
+        taskList.style.width = totalWidth + 'px';
+        taskList.style.minWidth = totalWidth + 'px';
+        
+        const taskListHeader = document.querySelector('.task-list-header');
+        if (taskListHeader) {
+            taskListHeader.style.width = totalWidth + 'px';
+            taskListHeader.style.minWidth = totalWidth + 'px';
+        }
+    }
+}
+
         
         // Firebase接続状態の監視
         function setupConnectionMonitoring() {
@@ -2045,6 +2361,365 @@ function enableResize() {
             return Math.round(totalProgress / children.length);
         }
         
+        // インライン編集を開始
+        function startInlineEdit(element, taskId, fieldType, currentValue) {
+            // 既に編集中の場合は無視
+            if (element.querySelector('input')) {
+                return;
+            }
+            
+            console.log('インライン編集開始:', fieldType, currentValue);
+            
+            // 元のテキストを非表示
+            const originalText = element.textContent;
+            element.style.padding = '0';
+            
+            // 入力フィールドを作成
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentValue;
+            input.style.cssText = `
+                width: 100%;
+                height: 100%;
+                border: 2px solid #007bff;
+                background-color: #fff;
+                padding: 4px 6px;
+                font-size: 14px;
+                font-family: inherit;
+                outline: none;
+                border-radius: 3px;
+                box-sizing: border-box;
+            `;
+            
+            // 元の内容をクリアして入力フィールドを追加
+            element.innerHTML = '';
+            element.appendChild(input);
+            
+            // フォーカスしてテキストを選択
+            input.focus();
+            input.select();
+            
+            // 編集終了関数
+            function finishEdit(save = false) {
+                const newValue = input.value.trim();
+                
+                // 入力フィールドを削除
+                element.innerHTML = '';
+                element.style.padding = '0 8px';
+                
+                if (save && newValue && newValue !== currentValue) {
+                    // 値を更新
+                    updateTaskField(taskId, fieldType, newValue);
+                    element.textContent = newValue;
+                    console.log(`${fieldType}を更新:`, newValue);
+                } else {
+                    // 元の値に戻す
+                    element.textContent = originalText;
+                }
+                
+                element.style.cursor = 'pointer';
+            }
+            
+            // Enterキーで保存
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    finishEdit(true);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    finishEdit(false);
+                }
+            });
+            
+            // フォーカスが外れたら保存
+            input.addEventListener('blur', function() {
+                setTimeout(() => finishEdit(true), 100);
+            });
+        }
+        
+        // タスクのフィールドを更新
+        function updateTaskField(taskId, fieldType, newValue) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                const oldValue = task[fieldType];
+                task[fieldType] = newValue;
+                
+                const fieldNames = {
+                    'name': 'タスク名',
+                    'assignee': '担当者'
+                };
+                
+                showSuccessMessage(`「${task.name}」の${fieldNames[fieldType]}を更新しました`);
+                
+                saveTasksToStorage();
+                // ガントチャートとカンバンを再描画
+                renderGanttChart();
+                renderKanban();
+            }
+        }
+        
+        // 日付ピッカーを開く
+        function openDatePicker(taskId, dateType, currentDate) {
+            console.log('openDatePickerが呼ばれました:', taskId, dateType, currentDate);
+            
+            // 既存の日付入力フィールドを削除
+            const existingOverlay = document.querySelector('.date-picker-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+            
+            if (!currentDate || currentDate === '未設定') {
+                currentDate = new Date().toISOString().split('T')[0];
+            }
+            
+            // オーバーレイ背景を作成
+            const overlay = document.createElement('div');
+            overlay.className = 'date-picker-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.2s ease-in-out;
+            `;
+            
+            // フェードインアニメーション用CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                .date-picker-container {
+                    animation: slideIn 0.3s ease-out;
+                }
+                @keyframes slideIn {
+                    from {
+                        transform: scale(0.8);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // 日付ピッカーコンテナを作成
+            const container = document.createElement('div');
+            container.className = 'date-picker-container';
+            container.style.cssText = `
+                background-color: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                text-align: center;
+                min-width: 300px;
+                max-width: 400px;
+                margin: 20px;
+            `;
+            
+            // タイトルを作成
+            const title = document.createElement('h3');
+            title.textContent = dateType === 'start' ? '開始日を選択してください' : '完了日を選択してください';
+            title.style.cssText = `
+                margin: 0 0 20px 0;
+                font-size: 18px;
+                font-weight: bold;
+                color: #333;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 10px;
+            `;
+            
+            // 日付入力フィールドを作成
+            const dateInput = document.createElement('input');
+            dateInput.type = 'date';
+            dateInput.value = currentDate;
+            dateInput.style.cssText = `
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                font-size: 16px;
+                margin-bottom: 20px;
+                box-sizing: border-box;
+                transition: border-color 0.3s ease;
+            `;
+            
+            // フォーカス時のスタイル
+            dateInput.addEventListener('focus', function() {
+                this.style.borderColor = '#007bff';
+                this.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
+            });
+            
+            dateInput.addEventListener('blur', function() {
+                this.style.borderColor = '#ddd';
+                this.style.boxShadow = 'none';
+            });
+            
+            // ボタンコンテナを作成
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.cssText = `
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+            `;
+            
+            // OKボタンを作成
+            const okButton = document.createElement('button');
+            okButton.textContent = 'OK';
+            okButton.style.cssText = `
+                padding: 12px 24px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+                min-width: 80px;
+            `;
+            
+            okButton.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#0056b3';
+            });
+            
+            okButton.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '#007bff';
+            });
+            
+            // キャンセルボタンを作成
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'キャンセル';
+            cancelButton.style.cssText = `
+                padding: 12px 24px;
+                background-color: #6c757d;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+                min-width: 80px;
+            `;
+            
+            cancelButton.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#545b62';
+            });
+            
+            cancelButton.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '#6c757d';
+            });
+            
+            // 要素を組み立て
+            buttonContainer.appendChild(okButton);
+            buttonContainer.appendChild(cancelButton);
+            container.appendChild(title);
+            container.appendChild(dateInput);
+            container.appendChild(buttonContainer);
+            overlay.appendChild(container);
+            document.body.appendChild(overlay);
+            
+            // 日付入力フィールドにフォーカス
+            setTimeout(() => {
+                dateInput.focus();
+                console.log('日付ピッカーを表示しました');
+            }, 100);
+            
+            // OKボタンのクリック処理
+            okButton.addEventListener('click', function() {
+                const newDate = dateInput.value;
+                console.log('新しい日付が選択されました:', newDate);
+                
+                if (newDate && newDate !== currentDate) {
+                    updateTaskDate(taskId, dateType, newDate);
+                }
+                
+                overlay.remove();
+                style.remove();
+            });
+            
+            // キャンセルボタンのクリック処理
+            cancelButton.addEventListener('click', function() {
+                console.log('日付選択がキャンセルされました');
+                overlay.remove();
+                style.remove();
+            });
+            
+            // オーバーレイクリックでキャンセル
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    console.log('オーバーレイクリックでキャンセル');
+                    overlay.remove();
+                    style.remove();
+                }
+            });
+            
+            // ESCキーでキャンセル
+            const handleKeydown = function(e) {
+                if (e.key === 'Escape') {
+                    console.log('ESCキーでキャンセル');
+                    overlay.remove();
+                    style.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+                if (e.key === 'Enter' && e.target === dateInput) {
+                    okButton.click();
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            // 日付変更時の即座反映（オプション）
+            dateInput.addEventListener('change', function() {
+                console.log('日付が変更されました（change イベント）:', this.value);
+                // この時点では何もしない（OKボタンで確定）
+            });
+        }
+        
+        // タスクの日付を更新
+        function updateTaskDate(taskId, dateType, newDate) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                const oldDate = task[dateType];
+                task[dateType] = newDate;
+                
+                // 開始日と終了日の整合性をチェック
+                const startDate = new Date(task.start);
+                const endDate = new Date(task.end);
+                
+                if (startDate > endDate) {
+                    if (dateType === 'start') {
+                        // 開始日が終了日より後の場合、終了日を同じ日に設定
+                        task.end = newDate;
+                        showSuccessMessage(`開始日が終了日より後のため、終了日も同じ日に設定しました`);
+                    } else {
+                        // 終了日が開始日より前の場合、開始日を同じ日に設定
+                        task.start = newDate;
+                        showSuccessMessage(`終了日が開始日より前のため、開始日も同じ日に設定しました`);
+                    }
+                } else {
+                    const dateTypeNames = {
+                        'start': '開始日',
+                        'end': '終了日'
+                    };
+                    showSuccessMessage(`「${task.name}」の${dateTypeNames[dateType]}を更新しました`);
+                }
+                
+                saveTasksToStorage();
+                renderGanttChart();
+                renderKanban();
+            }
+        }
+        
         // 日付フォーマット
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -2092,10 +2767,49 @@ function enableResize() {
         function addChildTask(parentId, event) {
             event.stopPropagation();
             const parent = tasks.find(t => t.id === parentId);
-            if (parent) {
-                parentTaskForChild = parent;
-                openAddTaskModal(true);
+            
+            if (!parent) {
+                console.error('親タスクが見つかりません:', parentId);
+                return;
             }
+            
+            console.log('子タスクを追加中:', parent.name);
+            
+            // 新しいタスクIDを生成
+            const newTaskId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+            
+            // 親タスクの同じ内容で子タスクを作成
+            const newTask = {
+                id: newTaskId,
+                name: parent.name + 'のサブタスク', // 親タスクの名前 + 'のサブタスク'
+                assignee: parent.assignee || '', // 親タスクの担当者を継承
+                start: parent.start, // 親タスクの開始日を継承
+                end: parent.end, // 親タスクの終了日を継承
+                status: 'todo', // デフォルトは未着手
+                parentId: parentId,
+                level: parent.level + 1, // 親タスクのレベル + 1
+                memo: '' // メモは空
+            };
+            
+            // レベル制限のチェック（孫タスクまでのみ）
+            if (newTask.level > 2) {
+                showSuccessMessage('これ以上深い階層のタスクは作成できません。');
+                return;
+            }
+            
+            // タスクを追加
+            tasks.push(newTask);
+            
+            // データを保存してUIを更新
+            saveTasksToStorage();
+            renderGanttChart();
+            renderKanban();
+            
+            // 成功メッセージを表示
+            const taskType = newTask.level === 1 ? '子タスク' : '孫タスク';
+            showSuccessMessage(`「${parent.name}」に${taskType}を追加しました`);
+            
+            console.log('追加されたタスク:', newTask);
         }
         
         // ガントチャートの描画
@@ -2189,6 +2903,11 @@ function enableResize() {
                         taskRow.classList.add('grandchild-task');
                     }
                     
+                    // 完了ステータスの場合はグレーアウト
+                    if (task.status === 'done') {
+                        taskRow.classList.add('completed');
+                    }
+                    
                     const hasChildTasks = hasChildren(task.id);
                     if (hasChildTasks) {
                         const collapseBtn = document.createElement('button');
@@ -2204,45 +2923,123 @@ function enableResize() {
                         taskRow.appendChild(collapseBtn);
                     }
                     
-                    const taskContent = document.createElement('div');
-                    taskContent.className = 'task-content';
-
-                    let deadlineHTML = '';
-                    if (progress === 100) {
-                        deadlineHTML = `<div class="task-deadline" style="padding: 2px 6px; background-color: #d4edda; border-radius: 15px; font-size: ${window.innerWidth <= 768 ? '10px' : '12px'}; white-space: nowrap; color: #155724; font-weight: 600;">完了</div>`;
-                    } else {
-                        const taskEndDate = new Date(task.end);
-                        const year = taskEndDate.getFullYear().toString().substr(-2);
-                        const month = (taskEndDate.getMonth() + 1).toString().padStart(2, '0');
-                        const day = taskEndDate.getDate().toString().padStart(2, '0');
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
+                    // セル形式でタスク行を構築
+                    
+                    // タスク名セル
+                    const taskNameCell = document.createElement('div');
+                    taskNameCell.className = 'task-cell task-name-cell';
+                    
+                    // タスク名のテキスト部分
+                    const taskNameDiv = document.createElement('div');
+                    taskNameDiv.textContent = task.name;
+                    taskNameDiv.style.overflow = 'hidden';
+                    taskNameDiv.style.textOverflow = 'ellipsis';
+                    taskNameDiv.style.whiteSpace = 'nowrap';
+                    taskNameDiv.style.width = '100%';
+                    taskNameDiv.style.cursor = 'pointer';
+                    taskNameDiv.title = 'クリックして編集';
+                    
+                    // タスク名のインライン編集イベント
+                    taskNameDiv.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        startInlineEdit(taskNameDiv, task.id, 'name', task.name);
+                    });
+                    
+                    taskNameCell.appendChild(taskNameDiv);
+                    
+                    // 担当者セル（スマホでは非表示）
+                    let assigneeCell = null;
+                    if (window.innerWidth > 768) {
+                        assigneeCell = document.createElement('div');
+                        assigneeCell.className = 'task-cell assignee-cell';
+                        const assigneeDiv = document.createElement('div');
+                        assigneeDiv.className = 'task-assignee';
+                        assigneeDiv.textContent = task.assignee || '未割当';
+                        assigneeDiv.style.cursor = 'pointer';
+                        assigneeDiv.title = 'クリックして編集';
                         
-                        let deadlineStyle = `padding: 2px 6px; background-color: #fff3cd; border-radius: 15px; font-size: ${window.innerWidth <= 768 ? '10px' : '12px'}; white-space: nowrap; color: #856404;`;
-                        if (taskEndDate < today) {
-                            deadlineStyle = `padding: 2px 6px; background-color: #f8d7da; border-radius: 15px; font-size: ${window.innerWidth <= 768 ? '10px' : '12px'}; white-space: nowrap; color: #721c24;`;
-                        }
+                        // 担当者のインライン編集イベント
+                        assigneeDiv.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            startInlineEdit(assigneeDiv, task.id, 'assignee', task.assignee || '');
+                        });
                         
-                        deadlineHTML = `<div class="task-deadline" style="${deadlineStyle}">${year}/${month}/${day}</div>`;
+                        assigneeCell.appendChild(assigneeDiv);
                     }
-
-                     // スマホでは担当者を非表示
-                    const assigneeHTML = window.innerWidth <= 768 ? '' : `<div class="task-assignee">${task.assignee || '未割当'}</div>`;
-
-                    // スマホの場合、ヘッダーテキストを変更
-                    if (window.innerWidth <= 768) {
-                        const taskListHeader = document.querySelector('.task-list-header');
-                        if (taskListHeader) {
-                            taskListHeader.textContent = 'タスク名 / 期限 / 進捗率';
-                        }
-                    }
-
-                    taskContent.innerHTML = `
-                        <div class="task-name">${task.name}</div>
-                        ${assigneeHTML}
-                        ${deadlineHTML}
-                        <div class="task-progress">${progress}%</div>
+                    
+                    // ステータスセル
+                    const statusCell = document.createElement('div');
+                    statusCell.className = 'task-cell status-cell';
+                    const statusSelect = document.createElement('select');
+                    statusSelect.className = 'task-status-select';
+                    statusSelect.dataset.taskId = task.id;
+                    statusSelect.innerHTML = `
+                        <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>未着手</option>
+                        <option value="inprogress" ${task.status === 'inprogress' ? 'selected' : ''}>進行中</option>
+                        <option value="done" ${task.status === 'done' ? 'selected' : ''}>完了</option>
                     `;
+                    statusCell.appendChild(statusSelect);
+                    
+                    // 開始日セル
+                    const startDateCell = document.createElement('div');
+                    startDateCell.className = 'task-cell start-date-cell';
+                    
+                    const taskStartDate = new Date(task.start);
+                    const startYear = taskStartDate.getFullYear().toString().substr(-2);
+                    const startMonth = (taskStartDate.getMonth() + 1).toString().padStart(2, '0');
+                    const startDay = taskStartDate.getDate().toString().padStart(2, '0');
+                    startDateCell.textContent = `${startYear}/${startMonth}/${startDay}`;
+                    startDateCell.dataset.taskId = task.id;
+                    startDateCell.dataset.dateType = 'start';
+                    
+                    // 開始日クリックイベント
+                    startDateCell.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        console.log('開始日セルがクリックされました:', task.id, task.start);
+                        openDatePicker(task.id, 'start', task.start);
+                    });
+                    
+                    // 完了日セル（旧期限セル）
+                    const deadlineCell = document.createElement('div');
+                    deadlineCell.className = 'task-cell deadline-cell';
+                    
+                    const taskEndDate = new Date(task.end);
+                    const year = taskEndDate.getFullYear().toString().substr(-2);
+                    const month = (taskEndDate.getMonth() + 1).toString().padStart(2, '0');
+                    const day = taskEndDate.getDate().toString().padStart(2, '0');
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    deadlineCell.textContent = `${year}/${month}/${day}`;
+                    
+                    // 完了ステータスの場合は緑色で表示
+                    if (task.status === 'done') {
+                        deadlineCell.style.color = '#155724';
+                        deadlineCell.style.fontWeight = '600';
+                    } else if (taskEndDate < today) {
+                        // 期限切れの場合は赤色で表示
+                        deadlineCell.style.color = '#721c24';
+                        deadlineCell.style.fontWeight = '600';
+                    }
+                    
+                    deadlineCell.dataset.taskId = task.id;
+                    deadlineCell.dataset.dateType = 'end';
+                    
+                    // 完了日クリックイベント
+                    deadlineCell.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        console.log('完了日セルがクリックされました:', task.id, task.end);
+                        openDatePicker(task.id, 'end', task.end);
+                    });
+                    
+                    // 進捗率セル
+                    const progressCell = document.createElement('div');
+                    progressCell.className = 'task-cell progress-cell';
+                    progressCell.textContent = `${progress}%`;
+                    
+                    // アクションセル（プラスボタン用）
+                    const actionCell = document.createElement('div');
+                    actionCell.className = 'task-cell action-cell';
                     
                     // 子タスク追加ボタン（孫タスクでない場合のみ）
                     if (task.level < 2) {
@@ -2251,10 +3048,32 @@ function enableResize() {
                         addChildBtn.innerHTML = '+';
                         addChildBtn.title = '子タスクを追加';
                         addChildBtn.onclick = (e) => addChildTask(task.id, e);
-                        taskContent.appendChild(addChildBtn);
+                        actionCell.appendChild(addChildBtn);
                     }
                     
-                    taskRow.appendChild(taskContent);
+                    // セルをタスク行に追加
+                    taskRow.appendChild(taskNameCell);
+                    if (assigneeCell) {
+                        taskRow.appendChild(assigneeCell);
+                    }
+                    taskRow.appendChild(statusCell);
+                    taskRow.appendChild(startDateCell);
+                    taskRow.appendChild(deadlineCell);
+                    taskRow.appendChild(progressCell);
+                    taskRow.appendChild(actionCell);
+                    
+                    // ステータス変更のイベントリスナーを追加
+                    statusSelect.addEventListener('change', function(e) {
+                        e.stopPropagation();
+                        const newStatus = e.target.value;
+                        const taskId = parseInt(e.target.dataset.taskId);
+                        updateTaskStatusFromSelect(taskId, newStatus);
+                    });
+                    
+                    statusSelect.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+
                     
                     taskRow.addEventListener('dragstart', handleDragStart);
                     taskRow.addEventListener('dragover', handleDragOver);
@@ -2267,6 +3086,11 @@ function enableResize() {
                     if (!visible) timelineRow.classList.add('hidden');
                     timelineRow.dataset.taskId = task.id;
                     timelineRow.dataset.index = index;
+                    
+                    // 完了ステータスの場合はタイムラインもグレーアウト
+                    if (task.status === 'done') {
+                        timelineRow.classList.add('completed');
+                    }
                     
                     const gridContainer = document.createElement('div');
                     gridContainer.className = 'timeline-grid';
@@ -2331,7 +3155,7 @@ function enableResize() {
                     addTodayLine(startDate, totalDays);
                     fixBackgroundColors();
                     if (window.innerWidth > 768) {
-                        enableResize();
+                        enableCellResize();
                     }
                 }, 50);
                 
@@ -2381,6 +3205,11 @@ function enableResize() {
             card.draggable = true;
             card.dataset.taskId = task.id;
             
+            // 完了ステータスの場合はグレーアウト
+            if (task.status === 'done') {
+                card.classList.add('completed');
+            }
+            
             const progress = calculateProgress(task.id);
             const levelPrefix = task.level === 0 ? '' : (task.level === 1 ? '└ ' : '  └ ');
             const deadlineStatus = getDeadlineStatus(task.end);
@@ -2412,7 +3241,7 @@ function enableResize() {
             card.innerHTML = `
                 <div class="kanban-card-title">${levelPrefix}${task.name}</div>
                 <div class="${deadlineClass}">
-                    📅 期限: ${formatDate(task.end)}
+                    📅 完了日: ${formatDate(task.end)}
                 </div>
                 ${memoHTML}
                 <div class="kanban-card-info">
@@ -2575,6 +3404,33 @@ function enableResize() {
             }
         }
         
+        // プルダウンからのタスクステータス更新
+        function updateTaskStatusFromSelect(taskId, newStatus) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                const oldStatus = task.status;
+                task.status = newStatus;
+                
+                // 状態変更の確認メッセージを表示
+                const statusNames = {
+                    'todo': '未着手',
+                    'inprogress': '進行中', 
+                    'done': '完了'
+                };
+                
+                showSuccessMessage(`「${task.name}」のステータスを「${statusNames[oldStatus]}」から「${statusNames[newStatus]}」に変更しました`);
+                
+                // 子タスクのステータスも更新（完了の場合のみ）
+                if (newStatus === 'done') {
+                    updateChildrenStatus(taskId, newStatus);
+                }
+                
+                saveTasksToStorage();
+                renderKanban();
+                renderGanttChart();
+            }
+        }
+        
         // 子タスクのステータス更新
         function updateChildrenStatus(parentId, status) {
             tasks.filter(t => t.parentId === parentId).forEach(child => {
@@ -2584,32 +3440,18 @@ function enableResize() {
         }
         
         // モーダル関連
-        function openAddTaskModal(isChildTask = false) {
+        function openAddTaskModal() {
             editingTaskId = null;
-            
-            if (isChildTask && parentTaskForChild) {
-                document.getElementById('modalTitle').textContent = `${parentTaskForChild.name} の子タスクを追加`;
-                document.getElementById('taskForm').reset();
-                document.getElementById('taskAssignee').value = parentTaskForChild.assignee || '';
-                document.getElementById('taskStart').value = parentTaskForChild.start;
-                document.getElementById('taskEnd').value = parentTaskForChild.end;
-                document.getElementById('parentTask').value = parentTaskForChild.id;
-                document.getElementById('parentTaskGroup').style.display = 'none';
-            } else {
-                document.getElementById('modalTitle').textContent = 'タスクを追加';
-                document.getElementById('taskForm').reset();
-                document.getElementById('parentTaskGroup').style.display = 'block';
-                updateParentTaskOptions();
-                parentTaskForChild = null;
-            }
-            
+            document.getElementById('modalTitle').textContent = 'タスクを追加';
+            document.getElementById('taskForm').reset();
+            document.getElementById('parentTaskGroup').style.display = 'block';
+            updateParentTaskOptions();
             document.getElementById('taskModal').style.display = 'block';
             document.querySelector('.delete-task-btn').style.display = 'none';
         }
         
         function openEditTaskModal(taskId) {
             editingTaskId = taskId;
-            parentTaskForChild = null;
             const task = tasks.find(t => t.id === taskId);
             
             if (task) {
@@ -2644,7 +3486,6 @@ function enableResize() {
         
         function closeModal() {
             document.getElementById('taskModal').style.display = 'none';
-            parentTaskForChild = null;
         }
 
         // タスクを削除
@@ -2715,16 +3556,9 @@ function enableResize() {
         document.getElementById('taskForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            let parentId = null;
-            
-            // parentTaskForChildが設定されている場合（プラスボタンから追加）
-            if (parentTaskForChild) {
-                parentId = parentTaskForChild.id;
-            } else {
-                // 通常のタスク追加（親タスクセレクトから取得）
-                const parentTaskValue = document.getElementById('parentTask').value;
-                parentId = parentTaskValue ? parseInt(parentTaskValue) : null;
-            }
+            // 親タスクセレクトから取得
+            const parentTaskValue = document.getElementById('parentTask').value;
+            const parentId = parentTaskValue ? parseInt(parentTaskValue) : null;
             
             const taskData = {
                 name: document.getElementById('taskName').value,
@@ -2764,7 +3598,6 @@ function enableResize() {
             }
             
             closeModal();
-            parentTaskForChild = null;
             normalizeParentIds();
             saveTasksToStorage();
             renderGanttChart();
