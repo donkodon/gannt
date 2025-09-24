@@ -215,6 +215,8 @@
             justify-content: flex-start;
             padding-left: 15px;
             position: relative;
+            overflow: visible !important;
+            z-index: 1;
         }
         
         .task-cell.assignee-cell {
@@ -1185,6 +1187,8 @@
                 min-width: calc(var(--task-name-cell-width) - 10px);
                 max-width: calc(var(--task-name-cell-width) - 10px);
                 font-size: 11px;
+                overflow: visible !important;
+                z-index: 1;
             }
             
             .task-cell.status-cell {
@@ -1408,77 +1412,149 @@
             }
         }
         
+        /* スマホ用のリサイズハンドル定義 */
+        @media (max-width: 768px) {
+            .cell-resize-handle {
+                width: 10px;
+                right: -5px;
+                border-right: 2px solid transparent;
+            }
+            
+            .cell-resize-handle:hover {
+                border-right: 2px solid #007bff;
+            }
+            
+            .cell-resize-handle.active {
+                border-right: 2px solid #007bff;
+            }
+        }
+        
+        /* セル間リサイズハンドル */
+        .cell-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            cursor: col-resize;
+            background-color: transparent;
+            z-index: 101;
+            transition: background-color 0.2s ease;
+            user-select: none;
+            border-right: 2px solid transparent;
+        }
+        
+        .cell-resize-handle:hover {
+            background-color: #007bff;
+            opacity: 0.6;
+            border-right: 2px solid #007bff;
+        }
+        
+        .cell-resize-handle.active {
+            background-color: #007bff;
+            opacity: 0.8;
+            border-right: 2px solid #007bff;
+        }
+        
+        body.resizing {
+            cursor: col-resize !important;
+            user-select: none !important;
+        }
+        
+        .resize-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            cursor: col-resize;
+            display: none;
+        }
+        
+        .resize-overlay.active {
+            display: block;
+        }
+        
+        /* スマホ用のリサイズハンドル定義 */
+        @media (max-width: 768px) {
+            .cell-resize-handle {
+                width: 10px;
+                right: -5px;
+            }
+        }
+        
         /* タッチデバイス用の調整 */
-@media (hover: none) and (pointer: coarse) {
-    .task-row:hover {
-        background-color: white;
-    }
-    
-    .task-row:active {
-        background-color: #e3f2fd;
-    }
-    
-    .collapse-btn:hover {
-        background-color: transparent;
-    }
-    
-    .collapse-btn:active {
-        background-color: #e9ecef;
-    }
-    
-    /* セル間リサイズハンドルのタッチ対応 */
-    .cell-resize-handle {
-        width: 12px;
-        right: -6px;
-    }
-    
-    .cell-resize-handle:active {
-        background-color: #007bff;
-        opacity: 0.8;
-    }
-    
-    /* 折りたたみボタンのタッチ範囲を拡大 */
-    .collapse-btn {
-        position: relative;
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 16px !important;
-    }
-    
-    .collapse-btn::before {
-        content: '';
-        position: absolute;
-        top: -12px;
-        left: -12px;
-        right: -12px;
-        bottom: -12px;
-        /* デバッグ用（確認後は削除してください） */
-        /* background-color: rgba(255, 0, 0, 0.1); */
-    }
-    
-    /* 親タスクの折りたたみボタン */
-    .task-row.parent-task .collapse-btn {
-        left: 2px !important;
-    }
-    
-    /* 子タスクの折りたたみボタン */
-    .task-row.child-task .collapse-btn {
-        left: 27px !important;
-    }
-    
-    /* タスクコンテンツの左パディング調整 */
-    .task-row.parent-task .task-content {
-        padding-left: 20px !important; /* 15px → 20px に変更、!important追加 */
-    }
-    
-    .task-row.child-task .task-content {
-        padding-left: 20px !important; /* この行を追加 */
-    }
-    
-    .task-row.grandchild-task .task-content {
-        padding-left: 5px !important; /* この行を追加 */
-    }
-}
+        @media (hover: none) and (pointer: coarse) {
+            .cell-resize-handle {
+                width: 10px;
+                right: -5px;
+            }
+            
+            .cell-resize-handle:active {
+                background-color: #007bff;
+                opacity: 0.8;
+            }
+            
+            /* 他の既存のタッチデバイス用スタイル */
+            .task-row:hover {
+                background-color: white;
+            }
+            
+            .task-row:active {
+                background-color: #e3f2fd;
+            }
+            
+            .collapse-btn:hover {
+                background-color: transparent;
+            }
+            
+            .collapse-btn:active {
+                background-color: #e9ecef;
+            }
+            
+            /* 折りたたみボタンのタッチ範囲を拡大 */
+            .collapse-btn {
+                position: relative;
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 16px !important;
+            }
+            
+            .collapse-btn::before {
+                content: '';
+                position: absolute;
+                top: -12px;
+                left: -12px;
+                right: -12px;
+                bottom: -12px;
+                /* デバッグ用（確認後は削除してください） */
+                /* background-color: rgba(255, 0, 0, 0.1); */
+            }
+            
+            /* 親タスクの折りたたみボタン */
+            .task-row.parent-task .collapse-btn {
+                left: 2px !important;
+            }
+            
+            /* 子タスクの折りたたみボタン */
+            .task-row.child-task .collapse-btn {
+                left: 27px !important;
+            }
+            
+            /* タスクコンテンツの左パディング調整 */
+            .task-row.parent-task .task-content {
+                padding-left: 20px !important; /* 15px → 20px に変更、!important追加 */
+            }
+            
+            .task-row.child-task .task-content {
+                padding-left: 20px !important; /* この行を追加 */
+            }
+            
+            .task-row.grandchild-task .task-content {
+                padding-left: 5px !important; /* この行を追加 */
+            }
+        }
         
         /* 横スクロールのヒント表示 */
         .gantt-body::after {
@@ -1528,13 +1604,128 @@
         .cell-resize-handle {
             position: absolute;
             top: 0;
-            right: -3px;
-            width: 6px;
+            right: 0;
+            width: 5px;
             height: 100%;
             cursor: col-resize;
             background-color: transparent;
             z-index: 101;
             transition: background-color 0.2s ease;
+        }
+        
+        .cell-resize-handle:hover {
+            background-color: #007bff;
+            opacity: 0.6;
+        }
+        
+        .cell-resize-handle.active {
+            background-color: #007bff;
+            opacity: 0.8;
+        }
+        
+        body.resizing {
+            cursor: col-resize !important;
+            user-select: none !important;
+        }
+        
+        .resize-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            cursor: col-resize;
+            display: none;
+        }
+        
+        .resize-overlay.active {
+            display: block;
+        }
+        
+        /* スマホ用のリサイズハンドル定義 */
+        @media (max-width: 768px) {
+            .cell-resize-handle {
+                width: 10px;
+                right: -5px;
+            }
+        }
+        
+        /* タッチデバイス用の調整 */
+        @media (hover: none) and (pointer: coarse) {
+            .cell-resize-handle {
+                width: 10px;
+                right: -5px;
+            }
+            
+            .cell-resize-handle:active {
+                background-color: #007bff;
+                opacity: 0.8;
+            }
+            
+            /* 他の既存のタッチデバイス用スタイル */
+            .task-row:hover {
+                background-color: white;
+            }
+            
+            .task-row:active {
+                background-color: #e3f2fd;
+            }
+            
+            .collapse-btn:hover {
+                background-color: transparent;
+            }
+            
+            .collapse-btn:active {
+                background-color: #e9ecef;
+            }
+            
+            /* 折りたたみボタンのタッチ範囲を拡大 */
+            .collapse-btn {
+                position: relative;
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 16px !important;
+            }
+            
+            .collapse-btn::before {
+                content: '';
+                position: absolute;
+                top: -12px;
+                left: -12px;
+                right: -12px;
+                bottom: -12px;
+                /* デバッグ用（確認後は削除してください） */
+                /* background-color: rgba(255, 0, 0, 0.1); */
+            }
+            
+            /* 親タスクの折りたたみボタン */
+            .task-row.parent-task .collapse-btn {
+                left: 2px !important;
+            }
+            
+            /* 子タスクの折りたたみボタン */
+            .task-row.child-task .collapse-btn {
+                left: 27px !important;
+            }
+            
+            /* タスクコンテンツの左パディング調整 */
+            .task-row.parent-task .task-content {
+                padding-left: 20px !important; /* 15px → 20px に変更、!important追加 */
+            }
+            
+            .task-row.child-task .task-content {
+                padding-left: 20px !important; /* この行を追加 */
+            }
+            
+            .task-row.grandchild-task .task-content {
+                padding-left: 5px !important; /* この行を追加 */
+            }
+        }
+            background-color: transparent;
+            z-index: 101;
+            transition: background-color 0.2s ease;
+            user-select: none;
         }
         
         .cell-resize-handle:hover {
@@ -1819,7 +2010,11 @@ setTimeout(() => {
     optimizePerformance();
     
     // セル間リサイズ機能を有効化
-    enableCellResize();
+    try {
+        enableCellResize();
+    } catch (error) {
+        console.error('enableCellResize エラー:', error);
+    }
 }, 100);
         }
         
@@ -1933,36 +2128,36 @@ setTimeout(() => {
         // セル間リサイズ機能を有効化
 function enableCellResize() {
     const taskNameCells = document.querySelectorAll('.task-name-cell');
+    const minWidth = 100;
+    const maxWidth = 500;
+    
+    // リサイズオーバーレイを事前に作成
+    let overlay = document.querySelector('.resize-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'resize-overlay';
+        document.body.appendChild(overlay);
+    }
     
     taskNameCells.forEach(cell => {
-        // 既存のハンドルを削除
-        const existingHandle = cell.querySelector('.cell-resize-handle');
-        if (existingHandle) {
-            existingHandle.remove();
-        }
-        
-        // リサイズハンドルを作成
-        const resizeHandle = document.createElement('div');
-        resizeHandle.className = 'cell-resize-handle';
-        cell.appendChild(resizeHandle);
-        
-        // オーバーレイを作成または取得
-        let overlay = document.querySelector('.resize-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'resize-overlay';
-            document.body.appendChild(overlay);
+        // 既存のハンドルをチェックし、存在しない場合のみ追加
+        let resizeHandle = cell.querySelector('.cell-resize-handle');
+        if (!resizeHandle) {
+            // リサイズハンドルを作成
+            resizeHandle = document.createElement('div');
+            resizeHandle.className = 'cell-resize-handle';
+            cell.style.position = 'relative'; // 親要素にposition:relativeを設定
+            cell.appendChild(resizeHandle);
         }
         
         let isResizing = false;
         let startX = 0;
         let startWidth = 0;
-        const minWidth = 100;
-        const maxWidth = 300;
         
+        // リサイズ開始処理
         function handleStart(e) {
             isResizing = true;
-            startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+            startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
             startWidth = cell.offsetWidth;
             
             resizeHandle.classList.add('active');
@@ -1973,10 +2168,11 @@ function enableCellResize() {
             e.stopPropagation();
         }
         
+        // リサイズ中処理
         function handleMove(e) {
             if (!isResizing) return;
             
-            const currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+            const currentX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
             const deltaX = currentX - startX;
             const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + deltaX));
             
@@ -1986,6 +2182,7 @@ function enableCellResize() {
             e.preventDefault();
         }
         
+        // リサイズ終了処理
         function handleEnd() {
             if (isResizing) {
                 isResizing = false;
@@ -1999,52 +2196,74 @@ function enableCellResize() {
             }
         }
         
-        // マウスイベント
+        // イベントリスナーを登録
         resizeHandle.addEventListener('mousedown', handleStart);
-        overlay.addEventListener('mousemove', handleMove);
-        overlay.addEventListener('mouseup', handleEnd);
-        
-        // タッチイベント
         resizeHandle.addEventListener('touchstart', handleStart, { passive: false });
-        overlay.addEventListener('touchmove', handleMove, { passive: false });
-        overlay.addEventListener('touchend', handleEnd);
+        
+        // ドキュメント全体にイベントリスナーを登録
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('touchmove', handleMove, { passive: false });
+        
+        document.addEventListener('mouseup', handleEnd);
+        document.addEventListener('touchend', handleEnd);
     });
     
     // 保存された幅を復元
     const savedWidth = localStorage.getItem('taskNameCellWidth');
     if (savedWidth) {
-        const width = Math.max(100, Math.min(300, parseInt(savedWidth)));
+        const width = Math.max(minWidth, Math.min(maxWidth, parseInt(savedWidth)));
         updateTaskNameCellWidth(width);
     }
 }
 
 // タスク名セルの幅を更新
 function updateTaskNameCellWidth(newWidth) {
-    // CSS変数を使用して全てのタスク名セルを更新
-    document.documentElement.style.setProperty('--task-name-cell-width', newWidth + 'px');
-    
-    // ヘッダーの幅も更新
-    const headerSpan = document.querySelector('.task-list-header span:first-child');
-    if (headerSpan) {
-        headerSpan.style.width = newWidth + 'px';
-    }
-    
-    // タスクリスト全体の幅を調整（必要に応じて）
-    const taskList = document.querySelector('.task-list');
-    if (taskList) {
-        const otherCellsWidth = 70 + 70 + 50 + 50 + 50 + 30; // 担当者 + ステータス + 開始日 + 完了日 + 進捗率 + アクション
-        const totalWidth = newWidth + otherCellsWidth;
-        taskList.style.width = totalWidth + 'px';
-        taskList.style.minWidth = totalWidth + 'px';
+    try {
+        // CSS変数を使用して全てのタスク名セルを更新
+        document.documentElement.style.setProperty('--task-name-cell-width', newWidth + 'px');
         
-        const taskListHeader = document.querySelector('.task-list-header');
-        if (taskListHeader) {
-            taskListHeader.style.width = totalWidth + 'px';
-            taskListHeader.style.minWidth = totalWidth + 'px';
+        // ヘッダーの幅も更新
+        const headerSpan = document.querySelector('.task-list-header span:first-child');
+        if (headerSpan) {
+            headerSpan.style.width = newWidth + 'px';
         }
+        
+        // タスクリスト全体の幅を調整
+        const taskList = document.querySelector('.task-list');
+        if (taskList) {
+            // 各セルの幅を正確に計算
+            const assigneeCellWidth = 70;
+            const statusCellWidth = 70;
+            const startDateCellWidth = 50;
+            const deadlineCellWidth = 50;
+            const progressCellWidth = 50;
+            const actionCellWidth = 30;
+            
+            const otherCellsWidth = assigneeCellWidth + statusCellWidth + startDateCellWidth + 
+                                  deadlineCellWidth + progressCellWidth + actionCellWidth;
+            const totalWidth = newWidth + otherCellsWidth;
+            
+            taskList.style.width = totalWidth + 'px';
+            taskList.style.minWidth = totalWidth + 'px';
+            
+            const taskListHeader = document.querySelector('.task-list-header');
+            if (taskListHeader) {
+                taskListHeader.style.width = totalWidth + 'px';
+                taskListHeader.style.minWidth = totalWidth + 'px';
+            }
+        }
+        
+        // タスク名セル内のテキスト要素の幅も更新
+        const taskNameDivs = document.querySelectorAll('.task-name-cell > div');
+        taskNameDivs.forEach(div => {
+            if (div) {
+                div.style.width = (newWidth - 15) + 'px'; // パディング分を引く
+            }
+        });
+    } catch (error) {
+        console.error('updateTaskNameCellWidth エラー:', error);
     }
 }
-
         
         // Firebase接続状態の監視
         function setupConnectionMonitoring() {
@@ -2947,6 +3166,14 @@ function updateTaskNameCellWidth(newWidth) {
                     
                     taskNameCell.appendChild(taskNameDiv);
                     
+                    // リサイズハンドルを追加
+                    const resizeHandle = document.createElement('div');
+                    resizeHandle.className = 'cell-resize-handle';
+                    taskNameCell.style.position = 'relative';
+                    taskNameCell.appendChild(resizeHandle);
+                    
+                    // 担当者セル（スマホでは非表示）
+
                     // 担当者セル（スマホでは非表示）
                     let assigneeCell = null;
                     if (window.innerWidth > 768) {
@@ -3062,6 +3289,9 @@ function updateTaskNameCellWidth(newWidth) {
                     taskRow.appendChild(progressCell);
                     taskRow.appendChild(actionCell);
                     
+                    // タスク名セルにリサイズ機能を追加（setTimeoutを削除）
+                    // タスク行ごとにリサイズ機能を追加する代わりに、すべてのタスク行生成後に一括で追加
+                    
                     // ステータス変更のイベントリスナーを追加
                     statusSelect.addEventListener('change', function(e) {
                         e.stopPropagation();
@@ -3154,10 +3384,13 @@ function updateTaskNameCellWidth(newWidth) {
                 setTimeout(() => {
                     addTodayLine(startDate, totalDays);
                     fixBackgroundColors();
-                    if (window.innerWidth > 768) {
+                    // セル間リサイズ機能を有効化
+                    try {
                         enableCellResize();
+                    } catch (error) {
+                        console.error('enableCellResize エラー:', error);
                     }
-                }, 50);
+                }, 100);
                 
             } catch (error) {
                 console.error('renderGanttChart エラー:', error);
