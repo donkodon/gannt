@@ -172,6 +172,7 @@
             position: sticky;
             left: 0;
             z-index: 25;
+            box-sizing: border-box;
         }
         
         .task-row {
@@ -198,10 +199,12 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            box-sizing: border-box;
         }
         
         .task-cell:last-child {
             border-right: none;
+            box-sizing: border-box;
         }
         
         :root {
@@ -1127,6 +1130,8 @@
             }
             
             .task-list-header {
+                min-width: 380px !important;
+                width: 380px !important;
                 padding: 0;
                 font-size: 12px;
                 height: 45px; /* スマホ版の高さを調整 */
@@ -1145,6 +1150,7 @@
                 align-items: center;
                 justify-content: center;
                 height: 100%;
+                box-sizing: border-box;
             }
             
             .task-row {
@@ -1153,6 +1159,7 @@
                 min-height: 40px;
                 max-height: 40px;
                 background-color: white !important;
+                box-sizing: border-box;
             }
             
             .task-row.parent-task {
@@ -1182,6 +1189,10 @@
             }
             
             /* スマホ版セルサイズ調整 */
+            .task-cell {
+                box-sizing: border-box;
+            }
+            
             .task-cell.task-name-cell {
                 width: calc(var(--task-name-cell-width) - 10px);
                 min-width: calc(var(--task-name-cell-width) - 10px);
@@ -1189,6 +1200,13 @@
                 font-size: 11px;
                 overflow: visible !important;
                 z-index: 1;
+            }
+            
+            .task-cell.assignee-cell {
+                width: 70px;
+                min-width: 70px;
+                max-width: 70px;
+                justify-content: center;
             }
             
             .task-cell.status-cell {
@@ -1389,12 +1407,15 @@
 .task-list {
     min-width: 320px !important;
     max-width: 450px !important;
+    box-sizing: border-box;
 }
 
 /* 進捗率の位置を固定 */
 .task-progress {
     position: absolute !important;
     right: 35px !important;
+}
+
 }
 
 
