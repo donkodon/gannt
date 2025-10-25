@@ -140,6 +140,8 @@
             overflow: visible;
             text-overflow: clip;
             transition: all 0.3s ease;
+            flex-shrink: 0;
+            box-sizing: border-box;
         }
         
         .task-list-header span:last-child {
@@ -1158,6 +1160,7 @@
                 justify-content: center;
                 height: 100%;
                 box-sizing: border-box;
+                flex-shrink: 0;
             }
             
             .task-row {
@@ -1803,13 +1806,13 @@
         <div class="gantt-container" id="ganttView">
             <div class="gantt-header">
                 <div class="task-list-header" id="taskListHeader">
-                    <span style="width: 150px; padding-left: 15px; display: inline-block;">タスク</span>
-                    <span style="width: 70px; text-align: center; display: inline-block;">担当</span>
-                    <span style="width: 70px; text-align: center; display: inline-block;">状態</span>
-                    <span style="width: 50px; text-align: center; display: inline-block;">開始</span>
-                    <span style="width: 50px; text-align: center; display: inline-block;">完了</span>
-                    <span style="width: 50px; text-align: center; display: inline-block;">進捗</span>
-                    <span style="width: 30px; text-align: center; display: inline-block;"></span>
+                    <span style="width: 150px; min-width: 150px; max-width: 150px; padding-left: 15px;">タスク</span>
+                    <span style="width: 70px; min-width: 70px; max-width: 70px; text-align: center;">担当</span>
+                    <span style="width: 70px; min-width: 70px; max-width: 70px; text-align: center;">状態</span>
+                    <span style="width: 50px; min-width: 50px; max-width: 50px; text-align: center;">開始</span>
+                    <span style="width: 50px; min-width: 50px; max-width: 50px; text-align: center;">完了</span>
+                    <span style="width: 50px; min-width: 50px; max-width: 50px; text-align: center;">進捗</span>
+                    <span style="width: 30px; min-width: 30px; max-width: 30px; text-align: center;"></span>
                 </div>
                 <div class="timeline-header-wrapper">
                     <div class="timeline-header" id="timelineHeader"></div>
