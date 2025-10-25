@@ -107,8 +107,8 @@
         }
         
         .task-list-header {
-            min-width: 520px;
-            width: 520px;
+            min-width: 480px;
+            width: 480px;
             padding: 0;
             font-weight: 600;
             border-right: 2px solid #dee2e6;
@@ -165,8 +165,8 @@
         }
         
         .task-list {
-            min-width: 520px;
-            width: 520px;
+            min-width: 480px;
+            width: 480px;
             border-right: 2px solid #dee2e6;
             background-color: white;
             position: sticky;
@@ -293,9 +293,9 @@
         }
         
         .task-cell.action-cell {
-            width: 70px;
-            min-width: 70px;
-            max-width: 70px;
+            width: 30px;
+            min-width: 30px;
+            max-width: 30px;
             justify-content: center;
             padding: 4px;
         }
@@ -1122,16 +1122,16 @@
             /* スマホ対応のセル調整 */
             .task-list-header,
             .task-list {
-                min-width: 420px !important;
-                width: 420px !important;
+                min-width: 380px !important;
+                width: 380px !important;
                 font-size: 12px;
                 padding: 0;
                 background-color: white !important;
             }
             
             .task-list-header {
-                min-width: 420px !important;
-                width: 420px !important;
+                min-width: 380px !important;
+                width: 380px !important;
                 padding: 0;
                 font-size: 12px;
                 height: 45px; /* スマホ版の高さを調整 */
@@ -1242,9 +1242,9 @@
             }
             
             .task-cell.action-cell {
-                width: 60px;
-                min-width: 60px;
-                max-width: 60px;
+                width: 25px;
+                min-width: 25px;
+                max-width: 25px;
             }
             
             .task-status-select {
@@ -1801,7 +1801,7 @@
                     <span style="width: 50px; text-align: center; display: inline-block;">開始</span>
                     <span style="width: 50px; text-align: center; display: inline-block;">完了</span>
                     <span style="width: 50px; text-align: center; display: inline-block;">進捗</span>
-                    <span style="width: 70px; text-align: center; display: inline-block;">操作</span>
+                    <span style="width: 30px; text-align: center; display: inline-block;"></span>
                 </div>
                 <div class="timeline-header-wrapper">
                     <div class="timeline-header" id="timelineHeader"></div>
@@ -2258,7 +2258,7 @@ function updateTaskNameCellWidth(newWidth) {
             const startDateCellWidth = 50;
             const deadlineCellWidth = 50;
             const progressCellWidth = 50;
-            const actionCellWidth = 70;
+            const actionCellWidth = 30;
             
             const otherCellsWidth = assigneeCellWidth + statusCellWidth + startDateCellWidth + 
                                   deadlineCellWidth + progressCellWidth + actionCellWidth;
@@ -3003,46 +3003,6 @@ function updateTaskNameCellWidth(newWidth) {
             return flatList;
         }
         
-        // タスクを上に移動
-        function moveTaskUp(taskId) {
-            const flatList = getFlatTaskList();
-            const currentIndex = flatList.findIndex(t => t.id === taskId);
-            
-            if (currentIndex <= 0) return;
-            
-            const currentTask = flatList[currentIndex];
-            const previousTask = flatList[currentIndex - 1];
-            
-            // 同じ階層でのみ移動可能
-            if (currentTask.level !== previousTask.level || currentTask.parentId !== previousTask.parentId) {
-                showSuccessMessage('同じ階層内でのみ移動できます');
-                return;
-            }
-            
-            reorderTasks(taskId, previousTask.id, true);
-            showSuccessMessage(`「${currentTask.name}」を上に移動しました`);
-        }
-        
-        // タスクを下に移動
-        function moveTaskDown(taskId) {
-            const flatList = getFlatTaskList();
-            const currentIndex = flatList.findIndex(t => t.id === taskId);
-            
-            if (currentIndex >= flatList.length - 1) return;
-            
-            const currentTask = flatList[currentIndex];
-            const nextTask = flatList[currentIndex + 1];
-            
-            // 同じ階層でのみ移動可能
-            if (currentTask.level !== nextTask.level || currentTask.parentId !== nextTask.parentId) {
-                showSuccessMessage('同じ階層内でのみ移動できます');
-                return;
-            }
-            
-            reorderTasks(taskId, nextTask.id, false);
-            showSuccessMessage(`「${currentTask.name}」を下に移動しました`);
-        }
-        
         // 子タスク追加ボタンのクリックハンドラ
         function addChildTask(parentId, event) {
             event.stopPropagation();
@@ -3325,84 +3285,9 @@ function updateTaskNameCellWidth(newWidth) {
                     progressCell.className = 'task-cell progress-cell';
                     progressCell.textContent = `${progress}%`;
                     
-                    // アクションセル（プラスボタンと上下移動ボタン用）
+                    // アクションセル（プラスボタン用）
                     const actionCell = document.createElement('div');
                     actionCell.className = 'task-cell action-cell';
-                    actionCell.style.cssText = 'display: flex; gap: 2px; justify-content: center; align-items: center;';
-                    
-                    // 上移動ボタン
-                    if (index > 0) {
-                        const moveUpBtn = document.createElement('button');
-                        moveUpBtn.className = 'move-up-btn';
-                        moveUpBtn.innerHTML = '▲';
-                        moveUpBtn.title = '上に移動';
-                        moveUpBtn.style.cssText = `
-                            width: 18px;
-                            height: 18px;
-                            border: none;
-                            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-                            color: white;
-                            border-radius: 3px;
-                            cursor: pointer;
-                            font-size: 10px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            transition: all 0.3s ease;
-                            padding: 0;
-                            line-height: 1;
-                        `;
-                        moveUpBtn.onclick = (e) => {
-                            e.stopPropagation();
-                            moveTaskUp(task.id);
-                        };
-                        moveUpBtn.onmouseenter = function() {
-                            this.style.background = 'linear-gradient(135deg, #ffb300 0%, #f57c00 100%)';
-                            this.style.transform = 'scale(1.1)';
-                        };
-                        moveUpBtn.onmouseleave = function() {
-                            this.style.background = 'linear-gradient(135deg, #ffc107 0%, #ff9800 100%)';
-                            this.style.transform = 'scale(1)';
-                        };
-                        actionCell.appendChild(moveUpBtn);
-                    }
-                    
-                    // 下移動ボタン
-                    if (index < flatTaskList.length - 1) {
-                        const moveDownBtn = document.createElement('button');
-                        moveDownBtn.className = 'move-down-btn';
-                        moveDownBtn.innerHTML = '▼';
-                        moveDownBtn.title = '下に移動';
-                        moveDownBtn.style.cssText = `
-                            width: 18px;
-                            height: 18px;
-                            border: none;
-                            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-                            color: white;
-                            border-radius: 3px;
-                            cursor: pointer;
-                            font-size: 10px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            transition: all 0.3s ease;
-                            padding: 0;
-                            line-height: 1;
-                        `;
-                        moveDownBtn.onclick = (e) => {
-                            e.stopPropagation();
-                            moveTaskDown(task.id);
-                        };
-                        moveDownBtn.onmouseenter = function() {
-                            this.style.background = 'linear-gradient(135deg, #138496 0%, #0f6674 100%)';
-                            this.style.transform = 'scale(1.1)';
-                        };
-                        moveDownBtn.onmouseleave = function() {
-                            this.style.background = 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)';
-                            this.style.transform = 'scale(1)';
-                        };
-                        actionCell.appendChild(moveDownBtn);
-                    }
                     
                     // 子タスク追加ボタン（孫タスクでない場合のみ）
                     if (task.level < 2) {
@@ -3410,33 +3295,7 @@ function updateTaskNameCellWidth(newWidth) {
                         addChildBtn.className = 'add-child-btn';
                         addChildBtn.innerHTML = '+';
                         addChildBtn.title = '子タスクを追加';
-                        addChildBtn.style.cssText = `
-                            width: 22px;
-                            height: 22px;
-                            border: none;
-                            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-                            color: white;
-                            border-radius: 50%;
-                            cursor: pointer;
-                            font-size: 14px;
-                            font-weight: bold;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            transition: all 0.3s ease;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        `;
                         addChildBtn.onclick = (e) => addChildTask(task.id, e);
-                        addChildBtn.onmouseenter = function() {
-                            this.style.background = 'linear-gradient(135deg, #218838 0%, #1ea88a 100%)';
-                            this.style.transform = 'scale(1.15)';
-                            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-                        };
-                        addChildBtn.onmouseleave = function() {
-                            this.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-                            this.style.transform = 'scale(1)';
-                            this.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                        };
                         actionCell.appendChild(addChildBtn);
                     }
                     
