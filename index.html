@@ -217,7 +217,7 @@
             max-width: var(--task-name-cell-width);
             justify-content: flex-start;
             padding-left: 15px;
-            padding-right: 10px;
+            padding-right: 0;
             position: relative;
             overflow: visible !important;
             z-index: 1;
@@ -3190,12 +3190,12 @@ function updateTaskNameCellWidth(newWidth) {
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
-                        width: calc(100% - 10px);
+                        width: 100%;
+                        box-sizing: border-box;
                         cursor: pointer;
                         position: relative;
                         z-index: 10;
                         padding: 4px;
-                        margin-right: 10px;
                     `;
                     taskNameDiv.title = 'クリックして編集';
                     
