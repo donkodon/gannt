@@ -2635,6 +2635,11 @@ function updateTaskNameCellWidth(newWidth) {
             element.innerHTML = '';
             element.appendChild(input);
             
+            // 入力フィールドのクリックイベントを親に伝播させない
+            input.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
             // フォーカスしてテキストを選択
             input.focus();
             input.select();
@@ -3182,6 +3187,8 @@ function updateTaskNameCellWidth(newWidth) {
                     // タスク名のインライン編集イベント
                     taskNameDiv.addEventListener('click', function(e) {
                         e.stopPropagation();
+                        e.preventDefault();
+                        console.log('タスク名がクリックされました:', task.name);
                         startInlineEdit(taskNameDiv, task.id, 'name', task.name);
                     });
                     
@@ -3209,6 +3216,8 @@ function updateTaskNameCellWidth(newWidth) {
                         // 担当者のインライン編集イベント
                         assigneeDiv.addEventListener('click', function(e) {
                             e.stopPropagation();
+                            e.preventDefault();
+                            console.log('担当者がクリックされました:', task.assignee);
                             startInlineEdit(assigneeDiv, task.id, 'assignee', task.assignee || '');
                         });
                         
@@ -3330,7 +3339,20 @@ function updateTaskNameCellWidth(newWidth) {
                     taskRow.addEventListener('dragover', handleDragOver);
                     taskRow.addEventListener('drop', handleDrop);
                     taskRow.addEventListener('dragend', handleDragEnd);
-                    taskRow.addEventListener('click', () => openEditTaskModal(task.id));
+                    taskRow.addEventListener('click', (e) => {
+                        // タスク名セル、担当者セル、日付セル、ステータスセルをクリックした場合はモーダルを開かない
+                        if (e.target.closest('.task-name-cell') || 
+                            e.target.closest('.assignee-cell') || 
+                            e.target.closest('.start-date-cell') || 
+                            e.target.closest('.deadline-cell') ||
+                            e.target.closest('.status-cell') ||
+                            e.target.classList.contains('task-status-select') ||
+                            e.target.classList.contains('add-child-btn') ||
+                            e.target.classList.contains('collapse-btn')) {
+                            return;
+                        }
+                        openEditTaskModal(task.id);
+                    });
                     
                     const timelineRow = document.createElement('div');
                     timelineRow.className = 'timeline-row';
