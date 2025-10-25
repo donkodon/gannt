@@ -109,6 +109,7 @@
         .task-list-header {
             min-width: 480px;
             width: 480px;
+            max-width: none;
             padding: 0;
             font-weight: 600;
             border-right: 2px solid #dee2e6;
@@ -123,6 +124,7 @@
             position: relative;
             height: 55px; /* 高さを少し増やす */
             box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* 美しいシャドウを追加 */
+            flex-wrap: nowrap;
         }
         
         .task-list-header span {
@@ -169,6 +171,7 @@
         .task-list {
             min-width: 480px;
             width: 480px;
+            max-width: none;
             border-right: 2px solid #dee2e6;
             background-color: white;
             position: sticky;
@@ -2254,34 +2257,62 @@ function updateTaskNameCellWidth(newWidth) {
         // CSS変数を使用して全てのタスク名セルを更新
         document.documentElement.style.setProperty('--task-name-cell-width', newWidth + 'px');
         
-        // ヘッダーの幅も更新
-        const headerSpan = document.querySelector('.task-list-header span:first-child');
-        if (headerSpan) {
-            headerSpan.style.width = newWidth + 'px';
+        // 各セルの固定幅
+        const assigneeCellWidth = 70;
+        const statusCellWidth = 70;
+        const startDateCellWidth = 50;
+        const deadlineCellWidth = 50;
+        const progressCellWidth = 50;
+        const actionCellWidth = 30;
+        
+        // ヘッダーの全てのspanを更新
+        const headerSpans = document.querySelectorAll('.task-list-header span');
+        if (headerSpans.length >= 7) {
+            headerSpans[0].style.width = newWidth + 'px';
+            headerSpans[0].style.minWidth = newWidth + 'px';
+            headerSpans[0].style.maxWidth = newWidth + 'px';
+            
+            headerSpans[1].style.width = assigneeCellWidth + 'px';
+            headerSpans[1].style.minWidth = assigneeCellWidth + 'px';
+            headerSpans[1].style.maxWidth = assigneeCellWidth + 'px';
+            
+            headerSpans[2].style.width = statusCellWidth + 'px';
+            headerSpans[2].style.minWidth = statusCellWidth + 'px';
+            headerSpans[2].style.maxWidth = statusCellWidth + 'px';
+            
+            headerSpans[3].style.width = startDateCellWidth + 'px';
+            headerSpans[3].style.minWidth = startDateCellWidth + 'px';
+            headerSpans[3].style.maxWidth = startDateCellWidth + 'px';
+            
+            headerSpans[4].style.width = deadlineCellWidth + 'px';
+            headerSpans[4].style.minWidth = deadlineCellWidth + 'px';
+            headerSpans[4].style.maxWidth = deadlineCellWidth + 'px';
+            
+            headerSpans[5].style.width = progressCellWidth + 'px';
+            headerSpans[5].style.minWidth = progressCellWidth + 'px';
+            headerSpans[5].style.maxWidth = progressCellWidth + 'px';
+            
+            headerSpans[6].style.width = actionCellWidth + 'px';
+            headerSpans[6].style.minWidth = actionCellWidth + 'px';
+            headerSpans[6].style.maxWidth = actionCellWidth + 'px';
         }
         
         // タスクリスト全体の幅を調整
         const taskList = document.querySelector('.task-list');
         if (taskList) {
-            // 各セルの幅を正確に計算
-            const assigneeCellWidth = 70;
-            const statusCellWidth = 70;
-            const startDateCellWidth = 50;
-            const deadlineCellWidth = 50;
-            const progressCellWidth = 50;
-            const actionCellWidth = 30;
-            
             const otherCellsWidth = assigneeCellWidth + statusCellWidth + startDateCellWidth + 
                                   deadlineCellWidth + progressCellWidth + actionCellWidth;
             const totalWidth = newWidth + otherCellsWidth;
             
             taskList.style.width = totalWidth + 'px';
             taskList.style.minWidth = totalWidth + 'px';
+            taskList.style.maxWidth = totalWidth + 'px';
             
             const taskListHeader = document.querySelector('.task-list-header');
             if (taskListHeader) {
                 taskListHeader.style.width = totalWidth + 'px';
                 taskListHeader.style.minWidth = totalWidth + 'px';
+                taskListHeader.style.maxWidth = totalWidth + 'px';
             }
         }
         
