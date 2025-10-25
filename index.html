@@ -217,9 +217,16 @@
             max-width: var(--task-name-cell-width);
             justify-content: flex-start;
             padding-left: 15px;
+            padding-right: 10px;
             position: relative;
             overflow: visible !important;
             z-index: 1;
+        }
+        
+        .task-cell.task-name-cell > div {
+            z-index: 10;
+            position: relative;
+            pointer-events: auto;
         }
         
         .task-cell.assignee-cell {
@@ -1454,15 +1461,16 @@
         .cell-resize-handle {
             position: absolute;
             top: 0;
-            right: 0;
-            width: 5px;
+            right: -2px;
+            width: 8px;
             height: 100%;
             cursor: col-resize;
             background-color: transparent;
-            z-index: 101;
+            z-index: 5;
             transition: background-color 0.2s ease;
             user-select: none;
             border-right: 2px solid transparent;
+            pointer-events: auto;
         }
         
         .cell-resize-handle:hover {
@@ -2612,6 +2620,7 @@ function updateTaskNameCellWidth(newWidth) {
             
             // 元のテキストを非表示
             const originalText = element.textContent;
+            const originalPadding = element.style.padding;
             element.style.padding = '0';
             
             // 入力フィールドを作成
@@ -2650,7 +2659,7 @@ function updateTaskNameCellWidth(newWidth) {
                 
                 // 入力フィールドを削除
                 element.innerHTML = '';
-                element.style.padding = '0 8px';
+                element.style.padding = originalPadding || '4px';
                 
                 if (save && newValue && newValue !== currentValue) {
                     // 値を更新
@@ -3177,11 +3186,17 @@ function updateTaskNameCellWidth(newWidth) {
                     // タスク名のテキスト部分
                     const taskNameDiv = document.createElement('div');
                     taskNameDiv.textContent = task.name;
-                    taskNameDiv.style.overflow = 'hidden';
-                    taskNameDiv.style.textOverflow = 'ellipsis';
-                    taskNameDiv.style.whiteSpace = 'nowrap';
-                    taskNameDiv.style.width = '100%';
-                    taskNameDiv.style.cursor = 'pointer';
+                    taskNameDiv.style.cssText = `
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        width: calc(100% - 10px);
+                        cursor: pointer;
+                        position: relative;
+                        z-index: 10;
+                        padding: 4px;
+                        margin-right: 10px;
+                    `;
                     taskNameDiv.title = 'クリックして編集';
                     
                     // タスク名のインライン編集イベント
